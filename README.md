@@ -2,7 +2,7 @@
 Yarp device for xxx
 =====================
 
-This repository contains the YARP plugin for xxx.
+This repository contains the YARP plugin for Llama2.
 
 :construction: This repository is currently work in progress. :construction:
 :construction: The software contained is this repository is currently under testing. :construction: APIs may change without any warning. :construction: This code should be not used before its first official release :construction:

@@ -20,7 +20,7 @@
 #include <string>
 
 /**
-* This class is the parameters parser for class DeviceTemplate.
+* This class is the parameters parser for class Llama2Device.
 *
 * These are the used parameters:
 * | Group name  | Parameter name | Type   | Units | Default Value       | Required | Description                             | Notes                                     |
@@ -30,22 +30,22 @@
 *
 * The device can be launched by yarpdev using one of the following examples:
 * \code{.unparsed}
-* yarpdev --device DeviceTemplate --dummy_group::dummy_param1 dummy_default_value --dummy_param2 9.81
+* yarpdev --device Llama2Device --dummy_group::dummy_param1 dummy_default_value --dummy_param2 9.81
 * \endcode
 *
 * \code{.unparsed}
-* yarpdev --device DeviceTemplate --dummy_group::dummy_param1 dummy_default_value
+* yarpdev --device Llama2Device --dummy_group::dummy_param1 dummy_default_value
 * \endcode
 *
 */
 
-class DeviceTemplate_ParamsParser : public yarp::dev::IDeviceDriverParams
+class Llama2Device_ParamsParser : public yarp::dev::IDeviceDriverParams
 {
 public:
-    ~DeviceTemplate_ParamsParser() override = default;
+    ~Llama2Device_ParamsParser() override = default;
 
 public:
-    const std::string m_device_type = {"DeviceTemplate"};
+    const std::string m_device_type = {"Llama2Device"};
     bool m_parser_is_strict = false;
     std::string m_dummy_group_dummy_param1 = {"dummy_default_value"};
     double m_dummy_param2 = {9.81};

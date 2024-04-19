@@ -4,4 +4,4 @@
 #message (Looking for CMakeFiles into this folder: ${YARP_MODULE_DIR})
 include(${YARP_MODULE_DIR}/YarpDeviceParamsParserGenerator.cmake)
 
-add_subdirectory(deviceTemplate)
+add_subdirectory(llama2Device)

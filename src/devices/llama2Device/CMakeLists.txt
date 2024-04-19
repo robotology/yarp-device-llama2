@@ -1,26 +1,26 @@
 # SPDX-FileCopyrightText: 2023 Istituto Italiano di Tecnologia (IIT)
 # SPDX-License-Identifier: BSD-3-Clause
 
-yarp_prepare_plugin(deviceTemplate
+yarp_prepare_plugin(llama2Device
   CATEGORY device
-  TYPE DeviceTemplate
-  INCLUDE DeviceTemplate.h
+  TYPE Llama2Device
+  INCLUDE Llama2Device.h
   INTERNAL ON
 )
 
-if(NOT SKIP_deviceTemplate)
-  yarp_add_plugin(yarp_deviceTemplate)
-  generateDeviceParamsParser(DeviceTemplate)
+if(NOT SKIP_llama2Device)
+  yarp_add_plugin(yarp_llama2Device)
+  generateDeviceParamsParser(Llama2Device)
 
-  target_sources(yarp_deviceTemplate
+  target_sources(yarp_llama2Device
     PRIVATE
-      DeviceTemplate.cpp
-      DeviceTemplate.h
-      DeviceTemplate_ParamsParser.cpp
-      DeviceTemplate_ParamsParser.h
+      Llama2Device.cpp
+      Llama2Device.h
+      Llama2Device_ParamsParser.cpp
+      Llama2Device_ParamsParser.h
   )
 
-  target_link_libraries(yarp_deviceTemplate
+  target_link_libraries(yarp_llama2Device
     PRIVATE
       YARP::YARP_os
       YARP::YARP_sig
@@ -28,9 +28,9 @@ if(NOT SKIP_deviceTemplate)
   )
 
   yarp_install(
-    TARGETS yarp_deviceTemplate
-    EXPORT yarp-device-deviceTemplate
-    COMPONENT yarp-device-deviceTemplate
+    TARGETS yarp_llama2Device
+    EXPORT yarp-device-llama2Device
+    COMPONENT yarp-device-llama2Device
     LIBRARY DESTINATION ${YARP_DYNAMIC_PLUGINS_INSTALL_DIR}
     ARCHIVE DESTINATION ${YARP_STATIC_PLUGINS_INSTALL_DIR}
     YARP_INI DESTINATION ${YARP_PLUGIN_MANIFESTS_INSTALL_DIR}
@@ -40,5 +40,5 @@ if(NOT SKIP_deviceTemplate)
     add_subdirectory(tests)
   endif()
 
-  set_property(TARGET yarp_deviceTemplate PROPERTY FOLDER "Plugins/Device")
+  set_property(TARGET yarp_llama2Device PROPERTY FOLDER "Plugins/Device")
 endif()

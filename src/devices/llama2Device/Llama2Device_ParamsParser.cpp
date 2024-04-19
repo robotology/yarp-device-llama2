@@ -12,16 +12,16 @@
 // Generated on: Thu Jan 25 14:38:34 2024
 
 
-#include "DeviceTemplate_ParamsParser.h"
+#include "Llama2Device_ParamsParser.h"
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Value.h>
 
 namespace {
-    YARP_LOG_COMPONENT(DeviceTemplateParamsCOMPONENT, "yarp.device.DeviceTemplate")
+    YARP_LOG_COMPONENT(Llama2DeviceParamsCOMPONENT, "yarp.device.Llama2Device")
 }
 
 
-std::vector<std::string> DeviceTemplate_ParamsParser::getListOfParams() const
+std::vector<std::string> Llama2Device_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
     params.push_back("dummy_group::dummy_param1");
@@ -30,7 +30,7 @@ std::vector<std::string> DeviceTemplate_ParamsParser::getListOfParams() const
 }
 
 
-bool      DeviceTemplate_ParamsParser::parseParams(const yarp::os::Searchable & config)
+bool      Llama2Device_ParamsParser::parseParams(const yarp::os::Searchable & config)
 {
     std::string config_string = config.toString();
     yarp::os::Property prop_check(config_string.c_str());
@@ -41,12 +41,12 @@ bool      DeviceTemplate_ParamsParser::parseParams(const yarp::os::Searchable & 
         if (sectionp.check("dummy_param1"))
         {
             m_dummy_group_dummy_param1 = sectionp.find("dummy_param1").asString();
-            yCInfo(DeviceTemplateParamsCOMPONENT) << "Parameter 'dummy_group::dummy_param1' using value:" << m_dummy_group_dummy_param1;
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'dummy_group::dummy_param1' using value:" << m_dummy_group_dummy_param1;
         }
         else
         {
-            yCError(DeviceTemplateParamsCOMPONENT) << "Mandatory parameter 'dummy_group::dummy_param1' not found!";
-            yCError(DeviceTemplateParamsCOMPONENT) << "Description of the parameter: This is the description of dummy_param1";
+            yCError(Llama2DeviceParamsCOMPONENT) << "Mandatory parameter 'dummy_group::dummy_param1' not found!";
+            yCError(Llama2DeviceParamsCOMPONENT) << "Description of the parameter: This is the description of dummy_param1";
             return false;
         }
         prop_check.unput("dummy_group::dummy_param1");
@@ -57,11 +57,11 @@ bool      DeviceTemplate_ParamsParser::parseParams(const yarp::os::Searchable & 
         if (config.check("dummy_param2"))
         {
             m_dummy_param2 = config.find("dummy_param2").asFloat64();
-            yCInfo(DeviceTemplateParamsCOMPONENT) << "Parameter 'dummy_param2' using value:" << m_dummy_param2;
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'dummy_param2' using value:" << m_dummy_param2;
         }
         else
         {
-            yCInfo(DeviceTemplateParamsCOMPONENT) << "Parameter 'dummy_param2' using DEFAULT value:" << m_dummy_param2;
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'dummy_param2' using DEFAULT value:" << m_dummy_param2;
         }
         prop_check.unput("dummy_param2");
     }
@@ -76,12 +76,12 @@ bool      DeviceTemplate_ParamsParser::parseParams(const yarp::os::Searchable & 
         {
             if (m_parser_is_strict)
             {
-                yCError(DeviceTemplateParamsCOMPONENT) << "User asking for parameter: "<<it->name <<" which is unknown to this parser!";
+                yCError(Llama2DeviceParamsCOMPONENT) << "User asking for parameter: "<<it->name <<" which is unknown to this parser!";
                 extra_params_found = true;
             }
             else
             {
-                yCWarning(DeviceTemplateParamsCOMPONENT) << "User asking for parameter: "<< it->name <<" which is unknown to this parser!";
+                yCWarning(Llama2DeviceParamsCOMPONENT) << "User asking for parameter: "<< it->name <<" which is unknown to this parser!";
             }
         }
 
@@ -95,16 +95,16 @@ bool      DeviceTemplate_ParamsParser::parseParams(const yarp::os::Searchable & 
 }
 
 
-std::string      DeviceTemplate_ParamsParser::getDocumentationOfDeviceParams() const
+std::string      Llama2Device_ParamsParser::getDocumentationOfDeviceParams() const
 {
     std::string doc;
     doc = doc + std::string("'dummy_group::dummy_param1': This is the description of dummy_param1\n");
     doc = doc + std::string("'dummy_param2': This is the description of dummy_param2\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device DeviceTemplate --dummy_group::dummy_param1 dummy_default_value --dummy_param2 9.81\n";
+    doc = doc + " yarpdev --device Llama2Device --dummy_group::dummy_param1 dummy_default_value --dummy_param2 9.81\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device DeviceTemplate --dummy_group::dummy_param1 dummy_default_value\n";
+    doc = doc + " yarpdev --device Llama2Device --dummy_group::dummy_param1 dummy_default_value\n";
     doc = doc + std::string("\n");
     return doc;
 }

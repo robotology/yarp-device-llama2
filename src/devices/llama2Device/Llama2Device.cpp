@@ -7,7 +7,7 @@
 #define _USE_MATH_DEFINES
 #endif
 
-#include "DeviceTemplate.h"
+#include "Llama2Device.h"
 
 #include <yarp/os/LogComponent.h>
 #include <yarp/os/LogStream.h>
@@ -18,15 +18,15 @@ using namespace yarp::os;
 using namespace yarp::dev;
 
 
-YARP_LOG_COMPONENT(DEVICETEMPLATE, "yarp.deviceTemplate", yarp::os::Log::TraceType);
+YARP_LOG_COMPONENT(DEVICETEMPLATE, "yarp.llama2Device", yarp::os::Log::TraceType);
 
 
-DeviceTemplate::DeviceTemplate()
+Llama2Device::Llama2Device()
 {
 
 }
 
-bool DeviceTemplate::open(yarp::os::Searchable &config)
+bool Llama2Device::open(yarp::os::Searchable &config)
 {
     if (!parseParams(config))  { return false; }
 
@@ -34,7 +34,7 @@ bool DeviceTemplate::open(yarp::os::Searchable &config)
     return true;
 }
 
-bool DeviceTemplate::close()
+bool Llama2Device::close()
 {
     yCInfo(DEVICETEMPLATE) << "Close";
     return true;
