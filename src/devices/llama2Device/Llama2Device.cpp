@@ -34,6 +34,31 @@ bool Llama2Device::open(yarp::os::Searchable &config)
     return true;
 }
 
+bool Llama2Device::ask(const std::string &question, std::string &oAnswer)
+{
+    
+}
+
+bool Llama2Device::setPrompt(const std::string &prompt)
+{
+    
+}
+
+bool Llama2Device::readPrompt(std::string &oPrompt)
+{
+    
+}
+
+bool Llama2Device::getConversation(std::vector<std::pair<Author, Content>> &oConversation)
+{
+
+}
+
+bool Llama2Device::deleteConversation() noexcept
+{
+    
+}
+
 bool Llama2Device::close()
 {
     yCInfo(DEVICETEMPLATE) << "Close";
