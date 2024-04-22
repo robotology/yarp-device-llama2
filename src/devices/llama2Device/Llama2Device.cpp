@@ -41,7 +41,11 @@ bool Llama2Device::ask(const std::string &question, std::string &oAnswer)
 
 bool Llama2Device::setPrompt(const std::string &prompt)
 {
-    
+    //setting up the command for the prompt setting
+    std::string command = "./main -m models/llama-2-7b/ggml-model-Q4_K_M.gguf --prompt " + prompt + "";
+
+    //executing the command
+    system(command.c_str());
 }
 
 bool Llama2Device::readPrompt(std::string &oPrompt)
