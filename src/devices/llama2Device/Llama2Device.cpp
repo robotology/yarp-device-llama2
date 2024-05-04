@@ -18,7 +18,7 @@ using namespace yarp::os;
 using namespace yarp::dev;
 
 
-YARP_LOG_COMPONENT(DEVICETEMPLATE, "yarp.llama2Device", yarp::os::Log::TraceType);
+YARP_LOG_COMPONENT(LLAMA2DEVICE, "yarp.llama2Device", yarp::os::Log::TraceType);
 
 
 Llama2Device::Llama2Device()
@@ -30,41 +30,38 @@ bool Llama2Device::open(yarp::os::Searchable &config)
 {
     if (!parseParams(config))  { return false; }
 
-    yCInfo(DEVICETEMPLATE) << "Open";
-    return true;
+    yCInfo(LLAMA2DEVICE) << "Open";
+    return false;
 }
 
 bool Llama2Device::ask(const std::string &question, std::string &oAnswer)
 {
-    
+    return false;
 }
 
 bool Llama2Device::setPrompt(const std::string &prompt)
 {
     //setting up the command for the prompt setting
-    std::string command = "./main -m models/llama-2-7b/ggml-model-Q4_K_M.gguf --prompt " + prompt + "";
-
-    //executing the command
-    system(command.c_str());
+    return false;
 }
 
 bool Llama2Device::readPrompt(std::string &oPrompt)
 {
-    
+    return false;
 }
 
 bool Llama2Device::getConversation(std::vector<std::pair<Author, Content>> &oConversation)
 {
-
+    return false;
 }
 
 bool Llama2Device::deleteConversation() noexcept
 {
-    
+    return false;
 }
 
 bool Llama2Device::close()
 {
-    yCInfo(DEVICETEMPLATE) << "Close";
-    return true;
+    yCInfo(LLAMA2DEVICE) << "Close";
+    return false;
 }
