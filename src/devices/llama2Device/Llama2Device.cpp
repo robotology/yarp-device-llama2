@@ -6,13 +6,17 @@
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-
+#include "common.h"
+#include "llama.h"
 #include "Llama2Device.h"
 
 #include <yarp/os/LogComponent.h>
 #include <yarp/os/LogStream.h>
 
 #include <cmath>
+#include <cstdio>
+#include <string>
+#include <vector>
 
 using namespace yarp::os;
 using namespace yarp::dev;
@@ -42,7 +46,26 @@ bool Llama2Device::ask(const std::string &question, std::string &oAnswer)
 bool Llama2Device::setPrompt(const std::string &prompt)
 {
     //setting up the command for the prompt setting
-    return false;
+    std::string aPrompt;
+    gpt_params params;
+
+    if(readPrompt(aPrompt))
+    {
+        yError() << "A prompt already set";
+        return false;
+    }
+
+    try
+    {
+        params.prompt = prompt;
+    }
+    catch(const std::exception& e)
+    {
+        yError() << e.what() << '\n';
+        return false;
+    }
+    
+    return true;
 }
 
 bool Llama2Device::readPrompt(std::string &oPrompt)
