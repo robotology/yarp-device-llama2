@@ -6,7 +6,7 @@
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-#include "common.h"
+#include <common/common.h>
 #include "llama.h"
 #include "Llama2Device.h"
 
@@ -36,20 +36,26 @@ bool Llama2Device::open(yarp::os::Searchable &config)
 
     yCInfo(LLAMA2DEVICE) << "Open";
 
+    model = config.find("model").asString();
+    if(init_LLM(model) == false){
+        fprintf(stderr , "%s: error: unable to load model\n" , __func__);
+        return false; // return false if the model is not found
+    }
+    return false;
+}
+
+// method for the initialization of the LLM model
+bool Llama2Device::init_LLM(string model_path)
+{
     // finding the model
     gpt_params params;
-    params.model = config.find("model").asString();
+    params.model = model_path;
     // init LLM
     llama_backend_init();
     // initialize the model
     llama_model_params model_params = llama_model_default_params();
     // model_params.n_gpu_layers = 99; // offload all layers to the GPU
     llama_model * model = llama_load_model_from_file(params.model.c_str(), model_params);
-
-    if (model == NULL) {
-        fprintf(stderr , "%s: error: unable to load model\n" , __func__);
-        return 1;
-    }
 
     // initialize the context
     llama_context_params ctx_params = llama_context_default_params();
@@ -59,16 +65,17 @@ bool Llama2Device::open(yarp::os::Searchable &config)
     ctx_params.n_threads = params.n_threads;
     ctx_params.n_threads_batch = params.n_threads_batch == -1 ? params.n_threads : params.n_threads_batch;
     
+    llama_context * ctx = llama_new_context_with_model(model, ctx_params);
+
     if (ctx == NULL) {
         fprintf(stderr , "%s: error: unable to create context\n" , __func__);
         return 1;
     }
-    return false;
+    return true;
 }
 
 bool Llama2Device::ask(const std::string &question, std::string &oAnswer)
 {
-    
     return false;
 }
 
@@ -77,6 +84,8 @@ bool Llama2Device::setPrompt(const std::string &prompt)
     //setting up the command for the prompt setting
     std::string aPrompt;
     gpt_params params;
+    // total lenght of the sequence including the prompt
+    const int n_len = 32;
 
     if(readPrompt(aPrompt))
     {
