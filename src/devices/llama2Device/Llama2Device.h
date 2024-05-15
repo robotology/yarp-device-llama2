@@ -35,9 +35,20 @@ public:
 
     bool deleteConversation() noexcept override;
 
+    // ILLM methods
+    bool init_LLM(const std::string &model_path);
+
     // DeviceDriver
     bool open(yarp::os::Searchable& config) override;
     bool close() override;
+
+private:
+    llama_context* ctx;
+    std::vector<llama_token> tokens_list;
+    std::string model_path;
+    llama_model* model;
+    llama_batch batch = llama_batch_init(512, 0, 1);
+
 };
 
 #endif // YARP_LLAMA2DEVICE_H

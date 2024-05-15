@@ -36,8 +36,9 @@ bool Llama2Device::open(yarp::os::Searchable &config)
 
     yCInfo(LLAMA2DEVICE) << "Open";
 
-    model = config.find("model").asString();
-    if(init_LLM(model) == false){
+    // to do: look for  the model path in the configuration file
+    model_path = config.find("model").asString(); // placeholder
+    if(init_LLM(model_path) == false){
         fprintf(stderr , "%s: error: unable to load model\n" , __func__);
         return false; // return false if the model is not found
     }
@@ -45,17 +46,16 @@ bool Llama2Device::open(yarp::os::Searchable &config)
 }
 
 // method for the initialization of the LLM model
-bool Llama2Device::init_LLM(string model_path)
+bool Llama2Device::init_LLM(const std::string &model_path)
 {
     // finding the model
     gpt_params params;
-    params.model = model_path;
     // init LLM
     llama_backend_init();
     // initialize the model
     llama_model_params model_params = llama_model_default_params();
     // model_params.n_gpu_layers = 99; // offload all layers to the GPU
-    llama_model * model = llama_load_model_from_file(params.model.c_str(), model_params);
+    llama_model * model = llama_load_model_from_file(model_path.c_str(), model_params);
 
     // initialize the context
     llama_context_params ctx_params = llama_context_default_params();
@@ -104,7 +104,6 @@ bool Llama2Device::setPrompt(const std::string &prompt)
     }
     // tokenize the prompt
 
-    std::vector<llama_token> tokens_list;
     tokens_list = ::llama_tokenize(ctx, params.prompt, true);
 
     const int n_ctx    = llama_n_ctx(ctx);
