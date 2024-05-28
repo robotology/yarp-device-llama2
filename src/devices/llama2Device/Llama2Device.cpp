@@ -76,7 +76,70 @@ bool Llama2Device::init_LLM(const std::string &model_path)
 
 bool Llama2Device::ask(const std::string &question, std::string &oAnswer)
 {
-    return false;
+    // tokenize the question
+    std::vector<llama_token> token_list = ::llama_tokenize(ctx, question, true);
+
+    // prepare input tokens
+    std::vector<llama_token> input_tokens = tokens_list;
+    input_tokens.push_back(llama_token_eos(model));
+
+    int n_past = 0;
+    int n_remain = params.n_predict;
+
+    std::vector<llama_token> embd;
+    std::ostringstream output_ss;
+
+    while(n_remain > 0){
+        if (!embd.empty()){
+            // evaluate the current batch of tokens
+            llama_batch batch;
+            batch.token = embd.data();
+            batch.logits = nullptr;
+            batch.n_tokens = static_cast<int32_t>(embd.size());
+
+            if(llama_decode(ctx, batch) != 0){
+                std::cerr << "Failed to decode tokens." << std::endl;
+                return false;
+            }
+            n_past += embd.size();
+            embd.clear();
+        }
+
+        float *logits = llama_get_logits(ctx);
+        if(!logits){
+            std::cerr << "Failed to get logits." << std::endl;
+            return false;
+        }
+
+        int n_vocab =  llama_n_vocab(model);
+        std::vector<llama_token_data> candidates_data(n_vocab);
+        for(int i = 0; i < n_vocab; ++i){
+            candidates_data[i]  = {i,logits[i], 0.0f};
+        }
+
+        // get the logits and sample the next token
+        llama_token_data_array candidates = {candidates_data.data(), candidates_data.size(), false};
+
+        llama_sample_softmax(ctx, &candidates);  // Compute softmax probabilities
+        llama_token new_token_id = llama_sample_token(ctx, &candidates);
+
+        // append the new token to the embedding
+        embd.push_back(new_token_id);
+        output_ss << llama_token_to_piece(ctx, new_token_id);
+
+        // decrement the remaining tokens and predict
+        --n_remain;
+
+        // stop if eos token is generated
+        if(new_token_id == llama_token_eos(model)){
+            break;
+        }
+    }
+
+    oAnswer = output_ss.str();
+    conversation_log.emplace_back(Author::User, question);
+    conversation_log.emplace_back(Author::Model, oAnswer);
+    return true;
 }
 
 bool Llama2Device::setPrompt(const std::string &prompt)
@@ -103,10 +166,11 @@ bool Llama2Device::setPrompt(const std::string &prompt)
         return false;
     }
     // tokenize the prompt
+    std::vector<llama_token> token_list;
 
     tokens_list = ::llama_tokenize(ctx, params.prompt, true);
 
-    const int n_ctx    = llama_n_ctx(ctx);
+    const int n_ctx = llama_n_ctx(ctx);
     const int n_kv_req = tokens_list.size() + (n_len - tokens_list.size());
 
     LOG_TEE("\n%s: n_len = %d, n_ctx = %d, n_kv_req = %d\n", __func__, n_len, n_ctx, n_kv_req);
@@ -114,7 +178,7 @@ bool Llama2Device::setPrompt(const std::string &prompt)
     // make sure the KV cache is big enough to hold all the prompt and generated tokens
     if (n_kv_req > n_ctx) {
         LOG_TEE("%s: error: n_kv_req > n_ctx, the required KV cache size is not big enough\n", __func__);
-        LOG_TEE("%s:        either reduce n_len or increase n_ctx\n", __func__);
+        LOG_TEE("%s: either reduce n_len or increase n_ctx\n", __func__);
         return 1;
     }
     // llama_decode will output logits only for the last token of the prompt
@@ -124,6 +188,7 @@ bool Llama2Device::setPrompt(const std::string &prompt)
         LOG_TEE("%s: llama_decode() failed\n", __func__);
         return 1;
     }
+    conversation_log.emplace_back(Author::User, prompt);
 
     return true;
 }
@@ -145,7 +210,8 @@ bool Llama2Device::readPrompt(std::string &oPrompt)
 
 bool Llama2Device::getConversation(std::vector<std::pair<Author, Content>> &oConversation)
 {
-    return false;
+    oConversation = conversation_log;
+    return true;
 }
 
 bool Llama2Device::deleteConversation() noexcept

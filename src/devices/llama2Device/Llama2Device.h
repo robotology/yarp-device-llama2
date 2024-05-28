@@ -9,6 +9,17 @@
 #include <yarp/dev/ILLM.h>
 #include <yarp/dev/DeviceDriver.h>
 #include "Llama2Device_ParamsParser.h"
+#include <llama.h>
+#include <vector>
+#include <string>
+
+enum class Author
+{
+    User,
+    Model
+};
+
+using Content = std::string;
 
 class Llama2Device :
         public yarp::dev::DeviceDriver,
@@ -43,12 +54,13 @@ public:
     bool close() override;
 
 private:
-    llama_context* ctx;
+    llama_context *ctx;
     std::vector<llama_token> tokens_list;
     std::string model_path;
-    llama_model* model;
+    llama_model *model;
     llama_batch batch = llama_batch_init(512, 0, 1);
-
+    gpt_params params;
+    std::vector<std::pair<Author, Content>> conversation_log;
 };
 
 #endif // YARP_LLAMA2DEVICE_H
