@@ -52,6 +52,7 @@ public:
     // DeviceDriver
     bool open(yarp::os::Searchable& config) override;
     bool close() override;
+    void help();
 
 private:
     llama_context *ctx;

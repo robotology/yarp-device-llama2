@@ -229,3 +229,16 @@ bool Llama2Device::close()
     yCInfo(LLAMA2DEVICE) << "Close";
     return false;
 }
+void Llama2Device::help() {
+    std::cout << "Llama2Device Methods:" << std::endl;
+    std::cout << "1. setPrompt" << std::endl;
+    std::cout << "   - Set the initial prompt for the model." << std::endl;
+    std::cout << "2. ask" << std::endl;
+    std::cout << "   - Ask a question to the model and get an answer." << std::endl;
+    std::cout << "3. getConversation" << std::endl;
+    std::cout << "   - Prints the current conversation with the model." << std::endl;
+    std::cout << "4. deleteConversation" << std::endl;
+    std::cout << "   - Deletes the current conversation" << std::endl;
+    std::cout << "5. help" << std::endl;
+    std::cout << "   - Prints the list of possible commands and their description." << std::endl;
+}
