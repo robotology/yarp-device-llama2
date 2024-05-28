@@ -216,7 +216,12 @@ bool Llama2Device::getConversation(std::vector<std::pair<Author, Content>> &oCon
 
 bool Llama2Device::deleteConversation() noexcept
 {
-    return false;
+    try {
+        conversation_log.clear();
+        return true;
+    } catch (const std::exception& e) {
+        return false;
+    }
 }
 
 bool Llama2Device::close()
