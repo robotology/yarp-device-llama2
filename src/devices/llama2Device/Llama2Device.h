@@ -5,8 +5,9 @@
 
 #ifndef YARP_LLAMA2DEVICE_H
 #define YARP_LLAMA2DEVICE_H
-
+//https://github.com/robotology/yarp/tree/master/src/libYARP_dev/src/idl_generated_code/yarp/dev
 #include <yarp/dev/ILLM.h>
+#include <yarp/dev/LLM_Message.h>
 #include <yarp/dev/DeviceDriver.h>
 #include "Llama2Device_ParamsParser.h"
 #include <llama.h>
@@ -40,9 +41,9 @@ public:
 
     bool readPrompt(std::string &oPrompt) override;
 
-    bool ask(const std::string &question, std::string &oAnswer) override;
+    bool ask(const std::string &question, yarp::dev::LLM_Message &oAnswer) override;
 
-    bool getConversation(std::vector<std::pair<Author, Content>> &oConversation) override;
+    bool getConversation(std::vector<yarp::dev::LLM_Message> &oConversation) override;
 
     bool deleteConversation() noexcept override;
 

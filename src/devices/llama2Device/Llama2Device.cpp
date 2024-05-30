@@ -74,7 +74,7 @@ bool Llama2Device::init_LLM(const std::string &model_path)
     return true;
 }
 
-bool Llama2Device::ask(const std::string &question, std::string &oAnswer)
+bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAnswer)
 {
     // tokenize the question
     std::vector<llama_token> token_list = ::llama_tokenize(ctx, question, true);
@@ -136,7 +136,14 @@ bool Llama2Device::ask(const std::string &question, std::string &oAnswer)
         }
     }
 
-    oAnswer = output_ss.str();
+    // oAnswer.type =  "assistant";
+    // oAnswer.content = output_ss.str();
+    // oAnswer.parameters.clear();
+    // oAnswer.arguments.clear();
+
+    oAnswer = yarp::dev::LLM_Message{"assistant", output_ss.str(), std::vector<std::string>(), std::vector<std::string>()};
+
+    // oAnswer = output_ss.str();
     conversation_log.emplace_back(Author::User, question);
     conversation_log.emplace_back(Author::Model, oAnswer);
     return true;
@@ -208,9 +215,10 @@ bool Llama2Device::readPrompt(std::string &oPrompt)
     return true;
 }
 
-bool Llama2Device::getConversation(std::vector<std::pair<Author, Content>> &oConversation)
+bool Llama2Device::getConversation(std::vector<yarp::dev::LLM_Message> &oConversation)
 {
-    oConversation = conversation_log;
+    std::vector<yarp::dev::LLM_Message> conversation;
+    oConversation = conversation;
     return true;
 }
 
