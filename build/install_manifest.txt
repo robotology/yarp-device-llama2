@@ -1,0 +1,3 @@
+/home/leonardo/repos/yarp-device-llama2/install/share/yarp/plugins/llama2Device.ini
+/home/leonardo/repos/yarp-device-llama2/install/lib/yarp/yarp_llama2Device.so
+/home/leonardo/repos/yarp-device-llama2/install/share/yarp/plugins/llama2Device.ini

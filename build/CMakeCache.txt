@@ -14,6 +14,9 @@
 # EXTERNAL cache entries
 ########################
 
+//Allow YARP to (re)build device param parsers
+ALLOW_DEVICE_PARAM_PARSER_GENERATION:BOOL=OFF
+
 //Build libraries as shared as opposed to static
 BUILD_SHARED_LIBS:BOOL=ON
 

@@ -10,7 +10,7 @@ yarp_prepare_plugin(llama2Device
 
 if(NOT SKIP_llama2Device)
   yarp_add_plugin(yarp_llama2Device)
-  generateDeviceParamsParser(Llama2Device)
+  generateDeviceParamsParser(Llama2Device yarp_llama2Device)
 
   target_sources(yarp_llama2Device
     PRIVATE

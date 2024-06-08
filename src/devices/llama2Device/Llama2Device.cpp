@@ -8,7 +8,7 @@
 #endif
 
 #include "Llama2Device.h"
-
+#include <fstream>
 #include <yarp/os/LogComponent.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/ResourceFinder.h>
