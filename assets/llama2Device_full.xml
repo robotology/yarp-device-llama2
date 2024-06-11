@@ -9,14 +9,11 @@
 <robot name="llama2Device" build="2" portprefix="/llama2Device" xmlns:xi="http://www.w3.org/2001/XInclude">
     <devices>
         <device name="llama2Device" type="llama2_device">
-            <param name="dummy_param1">
-                <!-- Insert project name here -->
+            <param name="model_name">
+                ggml-model-Q4_K_M.gguf
             </param>
-            <param name="location">
-                <!-- Insert location id here -->
-            </param>
-            <param name="agent_name">
-                <!-- Insert agent display name here -->
+            <param name="model_context">
+                <!-- llama2context -->
             </param>
         </device>
         <device name="LLM_nws" type="LLM_nws_yarp">

@@ -28,8 +28,8 @@ Llama2Device_ParamsParser::Llama2Device_ParamsParser()
 std::vector<std::string> Llama2Device_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
-    params.push_back("dummy_group::dummy_param1");
-    params.push_back("dummy_param2");
+    params.push_back("model_group::model_name");
+    params.push_back("model_group::model_context");
     return params;
 }
 
@@ -44,26 +44,41 @@ bool      Llama2Device_ParamsParser::parseParams(const yarp::os::Searchable & co
 
     std::string config_string = config.toString();
     yarp::os::Property prop_check(config_string.c_str());
-    //Parser of parameter dummy_group::dummy_param1
+    //Parser of parameter model_group::model_name
     {
         yarp::os::Bottle sectionp;
-        sectionp = config.findGroup("dummy_group");
-        if (sectionp.check("dummy_param1"))
+        sectionp = config.findGroup("model_group");
+        if (sectionp.check("model_name"))
         {
-            m_dummy_group_dummy_param1 = sectionp.find("dummy_param1").asString();
-            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'dummy_group::dummy_param1' using value:" << m_dummy_group_dummy_param1;
+            m_model_group_model_name = sectionp.find("model_name").asString();
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'model_group::model_name' using value:" << m_model_group_model_name;
         }
         else
         {
-            yCError(Llama2DeviceParamsCOMPONENT) << "Mandatory parameter 'dummy_group::dummy_param1' not found!";
-            yCError(Llama2DeviceParamsCOMPONENT) << "Description of the parameter: This is the description of dummy_param1";
+            yCError(Llama2DeviceParamsCOMPONENT) << "Mandatory parameter 'model_group::model_name' not found!";
+            yCError(Llama2DeviceParamsCOMPONENT) << "Description of the parameter: This is the description of model_name";
             return false;
         }
-        prop_check.unput("dummy_group::dummy_param1");
+        prop_check.unput("model_group::model_name");
     }
 
-    //Parser of parameter dummy_param2
+    //Parser of parameter model_group::model_context
     {
+        yarp::os::Bottle sectionp;
+        sectionp = config.findGroup("model_group");
+        if (sectionp.check("model_context"))
+        {
+            m_model_group_model_context = sectionp.find("model_context").asString();
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'model_group::model_name' using value:" << m_model_group_model_context;
+        }
+        else
+        {
+            yCError(Llama2DeviceParamsCOMPONENT) << "Mandatory parameter 'model_group::model_context' not found!";
+            yCError(Llama2DeviceParamsCOMPONENT) << "Description of the parameter: This is the description of model_context";
+            return false;
+        }
+        prop_check.unput("model_group::model_context");
+    /*{
         if (config.check("dummy_param2"))
         {
             m_dummy_param2 = config.find("dummy_param2").asFloat64();
@@ -74,7 +89,7 @@ bool      Llama2Device_ParamsParser::parseParams(const yarp::os::Searchable & co
             yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'dummy_param2' using DEFAULT value:" << m_dummy_param2;
         }
         prop_check.unput("dummy_param2");
-    }
+    }*/
 
     /*
     //This code check if the user set some parameter which are not check by the parser
