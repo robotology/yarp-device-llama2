@@ -56,11 +56,11 @@ public:
     };
     const parser_version_type m_parser_version = {};
 
-    const std::string m_dummy_group_dummy_param1_defaultValue = {"dummy_default_value"};
-    const std::string m_dummy_param2_defaultValue = {"9.81"};
+    const std::string m_model_group_model_name_defaultValue = {"ggml-model-Q4_K_M.gguf"};
+    const std::string m_model_group_model_context_defaultValue = {"model context"};
 
-    std::string m_dummy_group_dummy_param1 = {"dummy_default_value"};
-    double m_dummy_param2 = {9.81};
+    std::string m_model_group_model_name = {"dummy_default_value"};
+    std::string m_model_group_model_context = {"model context"};
 
     bool          parseParams(const yarp::os::Searchable & config) override;
     std::string   getDeviceClassName() const override { return m_device_classname; }
