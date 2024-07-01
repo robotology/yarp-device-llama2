@@ -8,4 +8,7 @@ models/*
 !models/contexts/
 #do not ignore readme.txt
 !models/readme.txt
-
+#ignore all files inside llama2 folder
+models/contexts/llama2/*
+#do not ignore readme.txt inside llama2 folder
+!models/contexts/llama2/readme.txt
