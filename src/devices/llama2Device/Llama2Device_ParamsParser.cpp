@@ -90,6 +90,7 @@ bool      Llama2Device_ParamsParser::parseParams(const yarp::os::Searchable & co
         }
         prop_check.unput("dummy_param2");
     }*/
+    }
 
     /*
     //This code check if the user set some parameter which are not check by the parser
