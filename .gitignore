@@ -1,3 +1,11 @@
+#ignore vscode folder 
 .vscode/
+#ignore build folder
 build/
+#ignore models folder
+models/*
+#do not ignore models/contexts
+!models/contexts/
+#do not ignore readme.txt
+!models/readme.txt
 
