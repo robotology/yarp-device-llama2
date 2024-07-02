@@ -56,13 +56,6 @@ bool Llama2Device::open(yarp::os::Searchable &config)
     }
 
     yCInfo(LLAMA2DEVICE) << "Open";
-
-    // to do: look for  the model path in the configuration file
-    model_path = config.find("model").asString(); // placeholder
-    if(init_LLM(model_path) == false){
-        fprintf(stderr , "%s: error: unable to load model\n" , __func__);
-        return false; // return false if the model is not found
-    }
     return false;
 }
 

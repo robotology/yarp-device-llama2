@@ -24,7 +24,7 @@ if(NOT SKIP_llama2Device)
   # cmake_path(SET LLAMA_LIBRARY_PATH "${LLAMA_INSTALL_PATH}/...")
 
   target_link_directories(yarp_llama2Device
-   PUBLIC
+  PUBLIC
     ${CMAKE_PREFIX_PATH}/lib
   )
 
