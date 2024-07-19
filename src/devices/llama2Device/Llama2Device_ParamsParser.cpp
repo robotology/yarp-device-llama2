@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Tue May 28 16:10:19 2024
+// Generated on: Fri Jul 19 16:24:54 2024
 
 
 #include "Llama2Device_ParamsParser.h"
@@ -28,8 +28,8 @@ Llama2Device_ParamsParser::Llama2Device_ParamsParser()
 std::vector<std::string> Llama2Device_ParamsParser::getListOfParams() const
 {
     std::vector<std::string> params;
-    params.push_back("model_group::model_name");
-    params.push_back("model_group::model_context");
+    params.push_back("model_context");
+    params.push_back("model_name");
     return params;
 }
 
@@ -44,52 +44,32 @@ bool      Llama2Device_ParamsParser::parseParams(const yarp::os::Searchable & co
 
     std::string config_string = config.toString();
     yarp::os::Property prop_check(config_string.c_str());
-    //Parser of parameter model_group::model_name
+    //Parser of parameter model_context
     {
-        yarp::os::Bottle sectionp;
-        sectionp = config.findGroup("model_group");
-        if (sectionp.check("model_name"))
+        if (config.check("model_context"))
         {
-            m_model_group_model_name = sectionp.find("model_name").asString();
-            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'model_group::model_name' using value:" << m_model_group_model_name;
+            m_model_context = config.find("model_context").asString();
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'model_context' using value:" << m_model_context;
         }
         else
         {
-            yCError(Llama2DeviceParamsCOMPONENT) << "Mandatory parameter 'model_group::model_name' not found!";
-            yCError(Llama2DeviceParamsCOMPONENT) << "Description of the parameter: This is the description of model_name";
-            return false;
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'model_context' using DEFAULT value:" << m_model_context;
         }
-        prop_check.unput("model_group::model_name");
+        prop_check.unput("model_context");
     }
 
-    //Parser of parameter model_group::model_context
+    //Parser of parameter model_name
     {
-        yarp::os::Bottle sectionp;
-        sectionp = config.findGroup("model_group");
-        if (sectionp.check("model_context"))
+        if (config.check("model_name"))
         {
-            m_model_group_model_context = sectionp.find("model_context").asString();
-            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'model_group::model_name' using value:" << m_model_group_model_context;
+            m_model_name = config.find("model_name").asString();
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'model_name' using value:" << m_model_name;
         }
         else
         {
-            yCError(Llama2DeviceParamsCOMPONENT) << "Mandatory parameter 'model_group::model_context' not found!";
-            yCError(Llama2DeviceParamsCOMPONENT) << "Description of the parameter: This is the description of model_context";
-            return false;
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'model_name' using DEFAULT value:" << m_model_name;
         }
-        prop_check.unput("model_group::model_context");
-    /*{
-        if (config.check("dummy_param2"))
-        {
-            m_dummy_param2 = config.find("dummy_param2").asFloat64();
-            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'dummy_param2' using value:" << m_dummy_param2;
-        }
-        else
-        {
-            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'dummy_param2' using DEFAULT value:" << m_dummy_param2;
-        }
-        prop_check.unput("dummy_param2");
-    }*/
+        prop_check.unput("model_name");
     }
 
     /*
@@ -128,12 +108,12 @@ std::string      Llama2Device_ParamsParser::getDocumentationOfDeviceParams() con
     doc = doc + std::string("This is the help for device: Llama2Device\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("This is the list of the parameters accepted by the device:\n");
-    doc = doc + std::string("'dummy_group::dummy_param1': This is the description of dummy_param1\n");
-    doc = doc + std::string("'dummy_param2': This is the description of dummy_param2\n");
+    doc = doc + std::string("'model_context': Context of Llama2 model\n");
+    doc = doc + std::string("'model_name': Yes\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device llama2Device --dummy_group::dummy_param1 dummy_default_value --dummy_param2 9.81\n";
+    doc = doc + " yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <optional_value>\n";
     doc = doc + std::string("Using only mandatory params:\n");
-    doc = doc + " yarpdev --device llama2Device --dummy_group::dummy_param1 dummy_default_value\n";
+    doc = doc + " yarpdev --device yarp_llama2Device\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
 }
