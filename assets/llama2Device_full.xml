@@ -8,26 +8,26 @@
 <!DOCTYPE robot PUBLIC "-//YARP//DTD yarprobotinterface 3.0//EN" "http://www.yarp.it/DTD/yarprobotinterfaceV3.0.dtd">
 <robot name="llama2Device" build="2" portprefix="/llama2Device" xmlns:xi="http://www.w3.org/2001/XInclude">
     <devices>
-        <device name="llama2Device" type="llama2_device">
+        <device name="llama2_device" type="llama2Device">
             <!--<param name="model_name">
                 ggml-model-Q4_K_M.gguf
             </param>-->
             <param name="model_context">
-                <!-- llama2context -->
+                llama2context
             </param>
         </device>
-        <device name="LLM_nws" type="LLM_nws_yarp">
+        <!--<device name="LLM_nws" type="LLM_nws_yarp">
 			<param extern-name="LLMNwsYarp_name" name="name">
 				/LLM_nws/rpc
 			</param>
 			<action phase="startup" level="5" type="attach">
 				<paramlist name="networks">
 					<elem name="subdeviceLLM">
-						LLMDevice
+						llama2_device
 					</elem>
 				</paramlist>
 			</action>
 			<action phase="shutdown" level="5" type="detach" />
-		</device>
+		</device>-->
     </devices>
 </robot>
