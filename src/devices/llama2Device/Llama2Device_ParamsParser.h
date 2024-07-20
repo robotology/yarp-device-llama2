@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Tue May 28 16:10:19 2024
+// Generated on: Fri Jul 19 16:24:54 2024
 
 
 #ifndef LLAMA2DEVICE_PARAMSPARSER_H
@@ -23,18 +23,18 @@
 * This class is the parameters parser for class Llama2Device.
 *
 * These are the used parameters:
-* | Group name  | Parameter name | Type   | Units | Default Value       | Required | Description                             | Notes                                     |
-* |:-----------:|:--------------:|:------:|:-----:|:-------------------:|:--------:|:---------------------------------------:|:-----------------------------------------:|
-* | dummy_group | dummy_param1   | string | -     | dummy_default_value | 1        | This is the description of dummy_param1 | Here are additional notes                 |
-* | -           | dummy_param2   | double | m/s^2 | 9.81                | 0        | This is the description of dummy_param2 | The default value is the gravity constant |
+* | Group name | Parameter name | Type   | Units | Default Value | Required | Description             | Notes                     |
+* |:----------:|:--------------:|:------:|:-----:|:-------------:|:--------:|:-----------------------:|:-------------------------:|
+* | -          | model_context  | string | -     | -             | 0        | Context of Llama2 model | Here are additional notes |
+* | -          | model_name     | string | -     | -             | 0        | Yes                     | Here are additional notes |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device llama2Device --dummy_group::dummy_param1 dummy_default_value --dummy_param2 9.81
+* yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <optional_value>
 * \endcode
 *
 * \code{.unparsed}
-* yarpdev --device llama2Device --dummy_group::dummy_param1 dummy_default_value
+* yarpdev --device yarp_llama2Device
 * \endcode
 *
 */
@@ -47,7 +47,7 @@ public:
 
 public:
     const std::string m_device_classname = {"Llama2Device"};
-    const std::string m_device_name = {"llama2Device"};
+    const std::string m_device_name = {"yarp_llama2Device"};
     bool m_parser_is_strict = false;
     struct parser_version_type
     {
@@ -56,11 +56,11 @@ public:
     };
     const parser_version_type m_parser_version = {};
 
-    const std::string m_model_group_model_name_defaultValue = {"ggml-model-Q4_K_M.gguf"};
-    const std::string m_model_group_model_context_defaultValue = {"model context"};
+    const std::string m_model_context_defaultValue = {""};
+    const std::string m_model_name_defaultValue = {""};
 
-    std::string m_model_group_model_name = {"dummy_default_value"};
-    std::string m_model_group_model_context = {"model context"};
+    std::string m_model_context = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
+    std::string m_model_name = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
 
     bool          parseParams(const yarp::os::Searchable & config) override;
     std::string   getDeviceClassName() const override { return m_device_classname; }
