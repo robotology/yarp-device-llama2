@@ -8,6 +8,7 @@ yarp_prepare_plugin(llama2Device
   INTERNAL ON
 )
 
+
 if(NOT SKIP_llama2Device)
   yarp_add_plugin(yarp_llama2Device)
   generateDeviceParamsParser(Llama2Device yarp_llama2Device)
@@ -20,12 +21,12 @@ if(NOT SKIP_llama2Device)
       Llama2Device_ParamsParser.h
   )
 
-  cmake_path(SET LLAMA_INCLUDE_PATH "${LLAMA_INSTALL_PATH}")
-  # cmake_path(SET LLAMA_LIBRARY_PATH "${LLAMA_INSTALL_PATH}/...")
+  # cmake_path(SET LLAMA_INCLUDE_PATH "${LLAMA_INSTALL_PATH}/include")
+  # cmake_path(SET LLAMA_LIBRARY_PATH "${LLAMA_INSTALL_PATH}/lib")
 
   target_link_directories(yarp_llama2Device
   PUBLIC
-    ${CMAKE_PREFIX_PATH}/lib
+    # ${CMAKE_PREFIX_PATH}/lib
   )
 
   target_include_directories(yarp_llama2Device
@@ -33,6 +34,8 @@ if(NOT SKIP_llama2Device)
     "${LLAMA_INCLUDE_PATH}"
     ${CMAKE_PREFIX_PATH}/include
     "${CMAKE_CURRENT_SOURCE_DIR}"
+    "/home/lollogiampy/IitProject/llama.cpp/common"
+    "/home/lollogiampy/IitProject/llama.cpp"
   )
 
   target_link_libraries(yarp_llama2Device
@@ -40,8 +43,8 @@ if(NOT SKIP_llama2Device)
       YARP::YARP_os
       YARP::YARP_sig
       YARP::YARP_dev
-      llama
-      #llama :: llama TO DO add the llama dependency
+      "/home/lollogiampy/IitProject/llama.cpp/build/common/libcommon.a"
+      "/home/lollogiampy/IitProject/llama.cpp/build/src/libllama.so"
   )
 
   yarp_install(
