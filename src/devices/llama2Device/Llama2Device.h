@@ -34,18 +34,16 @@ public:
     Llama2Device& operator=(Llama2Device&&) noexcept = delete;
     ~Llama2Device() override = default;
 
-~Llama2Device() override = default;
-
     // Rpc methods
-    bool setPrompt(const std::string &prompt) override;
+    bool setPrompt(const std::string &prompt);
 
-    bool readPrompt(std::string &oPrompt) override;
+    bool readPrompt(std::string &oPrompt);
 
-    bool ask(const std::string &question, yarp::dev::LLM_Message &oAnswer) override;
+    bool ask(const std::string &question, yarp::dev::LLM_Message &oAnswer);
 
-    bool getConversation(std::vector<yarp::dev::LLM_Message> &oConversation) override;
+    bool getConversation(std::vector<yarp::dev::LLM_Message> &oConversation);
 
-    bool deleteConversation() noexcept override;
+    bool deleteConversation() noexcept;
 
     // ILLM methods
     bool init_LLM(const std::string &model_path);
