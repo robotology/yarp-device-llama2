@@ -34,8 +34,8 @@ if(NOT SKIP_llama2Device)
     "${LLAMA_INCLUDE_PATH}"
     ${CMAKE_PREFIX_PATH}/include
     "${CMAKE_CURRENT_SOURCE_DIR}"
-    "/home/lollogiampy/IitProject/llama.cpp/common"
-    "/home/lollogiampy/IitProject/llama.cpp"
+    "/home/leonardo/repos/llama.cpp/common"
+    "/home/leonardo/repos/llama.cpp/include"
   )
 
   target_link_libraries(yarp_llama2Device
@@ -43,8 +43,8 @@ if(NOT SKIP_llama2Device)
       YARP::YARP_os
       YARP::YARP_sig
       YARP::YARP_dev
-      "/home/lollogiampy/IitProject/llama.cpp/build/common/libcommon.a"
-      "/home/lollogiampy/IitProject/llama.cpp/build/src/libllama.so"
+      "/home/leonardo/repos/llama.cpp/build/common/libcommon.a"
+      "/home/leonardo/repos/llama.cpp/build/src/libllama.so"
   )
 
   yarp_install(

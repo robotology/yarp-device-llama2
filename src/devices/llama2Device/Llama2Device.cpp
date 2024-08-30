@@ -6,8 +6,8 @@
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-#include <common/common.h>
-#include "llama.h"
+//#include <common/common.h>
+//#include "llama.h"
 #include "Llama2Device.h"
 #include <fstream>
 #include <yarp/os/LogComponent.h>
