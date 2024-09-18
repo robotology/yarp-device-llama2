@@ -64,6 +64,7 @@ bool Llama2Device::init_LLM(const std::string &model_path)
 {
     // finding the model
     gpt_params params;
+    llama_context_params params_2;
     // init LLM
     llama_backend_init();
     // initialize the model
@@ -76,8 +77,8 @@ bool Llama2Device::init_LLM(const std::string &model_path)
 
     ctx_params.seed  = 1234;
     ctx_params.n_ctx = 2048;
-    ctx_params.n_threads = params.n_threads;
-    ctx_params.n_threads_batch = params.n_threads_batch == -1 ? params.n_threads : params.n_threads_batch;
+    ctx_params.n_threads = params_2.n_threads;
+    ctx_params.n_threads_batch = params_2.n_threads_batch == -1 ? params_2.n_threads : params_2.n_threads_batch;
     
     llama_context * ctx = llama_new_context_with_model(model, ctx_params);
 
@@ -156,10 +157,13 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
     // oAnswer.arguments.clear();
 
     oAnswer = yarp::dev::LLM_Message{"assistant", output_ss.str(), std::vector<std::string>(), std::vector<std::string>()};
-
+    std::pair prova{Author::User, question};
+    std::pair prova2{Author::Model, oAnswer.content};
     // oAnswer = output_ss.str();
-    conversation_log.emplace_back(Author::User, question);
-    conversation_log.emplace_back(Author::Model, oAnswer);
+    //conversation_log.emplace_back(Author::User, Content(question));
+    //conversation_log.emplace_back(Author::Model, oAnswer);
+    conversation_log.emplace_back(prova);
+    conversation_log.emplace_back(prova2);
     return true;
 }
 
