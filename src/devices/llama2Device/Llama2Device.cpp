@@ -55,8 +55,21 @@ bool Llama2Device::open(yarp::os::Searchable &config)
         std::ifstream xmlFile(innerFilePath);
     }
 
-    yCInfo(LLAMA2DEVICE) << "Open";
-    return false;
+    yCInfo(LLAMA2DEVICE) << "Open method";
+
+    std::string model_path = "/home/leonardo/repos/yarp-device-llama2/models/contexts/llama2/llama-2-7b-chat.Q2_K.gguf"; 
+    init_LLM(model_path);
+    yCInfo(LLAMA2DEVICE) << "Model correctly initialized";
+
+    std::string question = "Which number comes after 2?";
+    yarp::dev::LLM_Message answer;
+    yCInfo(LLAMA2DEVICE) << "Line 66";
+    yCInfo(LLAMA2DEVICE) << "Ctx value inside method open:";
+    yCInfo(LLAMA2DEVICE) << ctx;
+    ask(question, answer);
+    yCInfo(LLAMA2DEVICE) << "dopo ask";
+
+    return true;
 }
 
 // method for the initialization of the LLM model
@@ -86,14 +99,19 @@ bool Llama2Device::init_LLM(const std::string &model_path)
         fprintf(stderr , "%s: error: unable to create context\n" , __func__);
         return 1;
     }
+
+    yCInfo(LLAMA2DEVICE) << "Ctx value:";
+    yCInfo(LLAMA2DEVICE) << ctx;
     return true;
 }
 
 bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAnswer)
 {
+    yCInfo(LLAMA2DEVICE) << "line 105";
+    yCInfo(LLAMA2DEVICE) << ctx;
     // tokenize the question
     std::vector<llama_token> token_list = ::llama_tokenize(ctx, question, true);
-
+    yCInfo(LLAMA2DEVICE) << "line 107";
     // prepare input tokens
     std::vector<llama_token> input_tokens = tokens_list;
     input_tokens.push_back(llama_token_eos(model));
@@ -157,13 +175,13 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
     // oAnswer.arguments.clear();
 
     oAnswer = yarp::dev::LLM_Message{"assistant", output_ss.str(), std::vector<std::string>(), std::vector<std::string>()};
-    std::pair prova{Author::User, question};
-    std::pair prova2{Author::Model, oAnswer.content};
+    std::pair log{Author::User, question};
+    std::pair log2{Author::Model, oAnswer.content};
     // oAnswer = output_ss.str();
     //conversation_log.emplace_back(Author::User, Content(question));
     //conversation_log.emplace_back(Author::Model, oAnswer);
-    conversation_log.emplace_back(prova);
-    conversation_log.emplace_back(prova2);
+    conversation_log.emplace_back(log);
+    conversation_log.emplace_back(log2);
     return true;
 }
 

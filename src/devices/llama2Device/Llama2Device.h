@@ -22,6 +22,8 @@ enum class Author
 };
 
 using Content = std::string;
+using Question = std::string;
+using Answer = yarp::dev::LLM_Message;
 
 class Llama2Device :
         public yarp::dev::DeviceDriver,
@@ -63,5 +65,7 @@ private:
     gpt_params params;
     std::vector<std::pair<Author, Content>> conversation_log;
 };
+
+
 
 #endif // YARP_LLAMA2DEVICE_H
