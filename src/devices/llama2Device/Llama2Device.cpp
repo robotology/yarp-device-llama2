@@ -22,6 +22,7 @@
 using namespace yarp::os;
 using namespace yarp::dev;
 
+//llama_context *ctx = nullptr;
 
 YARP_LOG_COMPONENT(LLAMA2DEVICE, "yarp.llama2Device", yarp::os::Log::TraceType);
 
@@ -61,13 +62,9 @@ bool Llama2Device::open(yarp::os::Searchable &config)
     init_LLM(model_path);
     yCInfo(LLAMA2DEVICE) << "Model correctly initialized";
 
-    std::string question = "Which number comes after 2?";
+    std::string question = "Ciao";
     yarp::dev::LLM_Message answer;
-    yCInfo(LLAMA2DEVICE) << "Line 66";
-    yCInfo(LLAMA2DEVICE) << "Ctx value inside method open:";
-    yCInfo(LLAMA2DEVICE) << ctx;
     ask(question, answer);
-    yCInfo(LLAMA2DEVICE) << "dopo ask";
 
     return true;
 }
@@ -83,7 +80,7 @@ bool Llama2Device::init_LLM(const std::string &model_path)
     // initialize the model
     llama_model_params model_params = llama_model_default_params();
     // model_params.n_gpu_layers = 99; // offload all layers to the GPU
-    llama_model * model = llama_load_model_from_file(model_path.c_str(), model_params);
+    model = llama_load_model_from_file(model_path.c_str(), model_params);
 
     // initialize the context
     llama_context_params ctx_params = llama_context_default_params();
@@ -93,7 +90,7 @@ bool Llama2Device::init_LLM(const std::string &model_path)
     ctx_params.n_threads = params_2.n_threads;
     ctx_params.n_threads_batch = params_2.n_threads_batch == -1 ? params_2.n_threads : params_2.n_threads_batch;
     
-    llama_context * ctx = llama_new_context_with_model(model, ctx_params);
+    ctx = llama_new_context_with_model(model, ctx_params);
 
     if (ctx == NULL) {
         fprintf(stderr , "%s: error: unable to create context\n" , __func__);
@@ -107,20 +104,20 @@ bool Llama2Device::init_LLM(const std::string &model_path)
 
 bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAnswer)
 {
-    yCInfo(LLAMA2DEVICE) << "line 105";
-    yCInfo(LLAMA2DEVICE) << ctx;
     // tokenize the question
     std::vector<llama_token> token_list = ::llama_tokenize(ctx, question, true);
-    yCInfo(LLAMA2DEVICE) << "line 107";
     // prepare input tokens
     std::vector<llama_token> input_tokens = tokens_list;
+    yCInfo(LLAMA2DEVICE) << "Question: " << question;
     input_tokens.push_back(llama_token_eos(model));
-
     int n_past = 0;
-    int n_remain = params.n_predict;
+    //int n_remain = params.n_predict;
+    int n_remain = 32;
+    yCInfo(LLAMA2DEVICE) << n_remain;
 
     std::vector<llama_token> embd;
     std::ostringstream output_ss;
+    yCInfo(LLAMA2DEVICE) << embd;
 
     while(n_remain > 0){
         if (!embd.empty()){
@@ -129,7 +126,7 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
             batch.token = embd.data();
             batch.logits = nullptr;
             batch.n_tokens = static_cast<int32_t>(embd.size());
-
+             yCInfo(LLAMA2DEVICE) << llama_decode(ctx, batch);
             if(llama_decode(ctx, batch) != 0){
                 std::cerr << "Failed to decode tokens." << std::endl;
                 return false;
@@ -159,20 +156,20 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
         // append the new token to the embedding
         embd.push_back(new_token_id);
         output_ss << llama_token_to_piece(ctx, new_token_id);
-
+        yCInfo(LLAMA2DEVICE) << embd;
         // decrement the remaining tokens and predict
         --n_remain;
-
+        yCInfo(LLAMA2DEVICE) << n_remain;
         // stop if eos token is generated
         if(new_token_id == llama_token_eos(model)){
             break;
         }
     }
 
-    // oAnswer.type =  "assistant";
-    // oAnswer.content = output_ss.str();
-    // oAnswer.parameters.clear();
-    // oAnswer.arguments.clear();
+    oAnswer.type =  "assistant";
+    oAnswer.content = output_ss.str();
+    oAnswer.parameters.clear();
+    oAnswer.arguments.clear();
 
     oAnswer = yarp::dev::LLM_Message{"assistant", output_ss.str(), std::vector<std::string>(), std::vector<std::string>()};
     std::pair log{Author::User, question};
@@ -180,6 +177,9 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
     // oAnswer = output_ss.str();
     //conversation_log.emplace_back(Author::User, Content(question));
     //conversation_log.emplace_back(Author::Model, oAnswer);
+    yCInfo(LLAMA2DEVICE) << "Answer: " << oAnswer.content;
+    //yCInfo(LLAMA2DEVICE) << output_ss.str();
+    yCInfo(LLAMA2DEVICE) << n_remain;
     conversation_log.emplace_back(log);
     conversation_log.emplace_back(log2);
     return true;
