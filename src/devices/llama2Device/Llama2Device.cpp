@@ -58,11 +58,12 @@ bool Llama2Device::open(yarp::os::Searchable &config)
 
     yCInfo(LLAMA2DEVICE) << "Open method";
 
-    std::string model_path = "/home/leonardo/repos/yarp-device-llama2/models/contexts/llama2/llama-2-7b-chat.Q2_K.gguf"; 
+    std::string model_path = "/home/leonardo/Repos/yarp-device-llama2/models/contexts/llama2/llama-2-7b-chat.Q2_K.gguf"; 
     init_LLM(model_path);
-    yCInfo(LLAMA2DEVICE) << "Model correctly initialized";
+    //yCInfo(LLAMA2DEVICE) << "Model correctly initialized";
 
-    std::string question = "Ciao";
+    std::string prompt = "Hello my name is";
+
     yarp::dev::LLM_Message answer;
     ask(question, answer);
 
@@ -72,6 +73,25 @@ bool Llama2Device::open(yarp::os::Searchable &config)
 // method for the initialization of the LLM model
 bool Llama2Device::init_LLM(const std::string &model_path)
 {
+    // number of layers to offload to the GPU
+    int ngl _ 99;
+    // number of tokens to predict
+    int n_predict = 32;
+    // initialize the model
+    llama_model_params model_params = llama_model_default_params();
+    model_params.n_gpu_layers = ngl;
+
+    llama_model * model = llama_load_model_from_file(model_path.c_str(), model_params);
+
+    // check if model is found
+    if (model == NULL){
+        yCError(LLAMA2DEVICE) << "Error: unable to find model!";
+        return false;
+    }
+    else{
+        yCInfo(LLAMA2DEVICE) << "Model correctly intialized";
+    }
+    /*
     // finding the model
     gpt_params params;
     llama_context_params params_2;
@@ -98,12 +118,129 @@ bool Llama2Device::init_LLM(const std::string &model_path)
     }
 
     yCInfo(LLAMA2DEVICE) << "Ctx value:";
-    yCInfo(LLAMA2DEVICE) << ctx;
+    yCInfo(LLAMA2DEVICE) << ctx;*/
     return true;
 }
 
 bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAnswer)
 {
+    // tokenize the prompt
+    // find the number of tokens in the prompt
+    const int n_prompt = -llama_tokenize(model, prompt.c_str(), prompt.size(), NULL, 0, true, true);
+
+    // allocate space for the tokens and tokenize the prompt
+    std::vector<llama_token> prompt_tokens(n_prompt);
+    if(llama_tokenize(model, prompt.c_str(), prompt.size(), NULL, 0, true, true) < 0){
+        yCError(LLAMA2DEVICE) << "Error: failed to tokenize the prompt";
+        return false;
+    }
+    else{
+        yCInfo(LLAMA2DEVICE) << "Prompt tokenized correctly";
+    }
+
+    // initialize the context
+    llama_context_params ctx_params = llama_context_default_params();
+    // n_ctx is the context size
+    ctx_params.n_ctx = n_prompt + n_predict -1;
+    // n_batch is the maximum number of tokens that can be processed in a single call to llama_decode
+    ctx_params.n_batch = n_prompt;
+    // enable performance counters
+    ctx_params.no_perf = false;
+
+    llama_context * ctx = llama_new_context_with_model(model, ctx_params);
+
+    // check if context has been initialized correctly
+    if(ctx == NULL){
+        yCError(LLAMA2DEVICE) << "Error: failed to create the llama_context";
+        return false;
+    }
+    else{
+        yCInfo(LLAMA2DEVICE) << "Context correctly initialized";
+    }
+
+    // initialize the sampler
+    auto sparams = llama_sampler_chain_default_params();
+    sparams.no_perf = false;
+    llama_sampler * smpl = llama_sampler_chain_init();
+
+    llama_sampler_chain_add(smpl, llama_sampler_init_greedy());
+
+    //print the prompt token by token
+    for(auto id: prompt_tokens){
+        char buf[128];
+        int n = llama_token_to_piece(model, id, buf, sizeof(buf), 0, true);
+        if(n < 0){
+            yCError(LLAMA2DEVICE) << "Error: failed to convert token to piece";
+            return false;
+        }
+        std::string s(buf, n);
+        yCInfo(LLAMA2DEVICE) << "%s", s.c_str();
+    }
+
+    // prepare a batch for the prompt
+    llama_batch batch = llama_batch_get_one(prompt_tokens.data(), prompt_tokens.size(), 0, 0);
+
+    // main loop
+    const auto t_main_start = ggml_time_us();
+    int n_decode = 0;
+    llama_token new_token_id;
+
+    for (int n_pos = 0; n_pos + batch.n_tokens < n_prompt + n_predict;) {
+        // evaluate the current batch with the transformer model
+        if(llama_decode(ctx, batch)){
+            yCError(LLAMA2DEVICE) << "Error: failed to eval";
+            return false;
+        }
+
+        n_pos += batch.n_tokens;
+
+        // sample the next token
+        {
+            new_token_id = llama_sampler_sample(smpl, ctx, -1);
+
+            // check if it is the end of a generation
+            if(llama_token_is_eog(model, new_token_id)){
+                break;
+            }
+
+            char buf[128];
+            int n = llama_token_to_piece(model, new_token_id, buf, sizeof(buf), 0, true);
+            if(n < 0){
+                yCError(LLAMA2DEVICE) << "Error: failed to convert token to piece";
+                return false;
+            }
+            std::string s(buf, n);
+            yCInfo(LLAMA2DEVICE) << "%s", s.c_str();
+            //fflush(stdout);
+
+            // prepare the next batch with the sampled token
+            batch = llama_batch_get_one(&new_token_id, 1, n_pos, 0);
+
+            n_decode += 1;
+        }
+    }
+
+    yCInfo(LLAMA2DEVICE) << "\n";
+
+    const auto t_main_end = ggml_time_us();
+
+    yCInfo(LLAMA2DEVICE) << "%s: decoded %d tokens in %.2f s, speed: %.2f t/s\n",
+            __func__, n_decode, (t_main_end - t_main_start) / 1000000.0f, n_decode / ((t_main_end - t_main_start) / 100000.0f);
+
+    yCInfo(LLAMA2DEVICE) << "\n";
+    llama_perf_sampler_print(smpl);
+    llama_perf_context_print(ctx);
+    yCInfo(LLAMA2DEVICE) << "\n";
+
+    llama_sampler_free(smpl);
+    llama_free(ctx);
+    llama_free_model(model);
+
+    return true;
+
+
+
+    /*
     // tokenize the question
     std::vector<llama_token> token_list = ::llama_tokenize(ctx, question, true);
     // prepare input tokens
@@ -165,7 +302,9 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
             break;
         }
     }
+    */
 
+    /*
     oAnswer.type =  "assistant";
     oAnswer.content = output_ss.str();
     oAnswer.parameters.clear();
@@ -183,6 +322,7 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
     conversation_log.emplace_back(log);
     conversation_log.emplace_back(log2);
     return true;
+    */
 }
 
 bool Llama2Device::setPrompt(const std::string &prompt)
