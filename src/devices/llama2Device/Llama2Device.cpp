@@ -65,7 +65,7 @@ bool Llama2Device::open(yarp::os::Searchable &config)
     std::string prompt = "Hello my name is";
 
     yarp::dev::LLM_Message answer;
-    ask(question, answer);
+    ask(prompt, answer);
 
     return true;
 }
@@ -74,11 +74,11 @@ bool Llama2Device::open(yarp::os::Searchable &config)
 bool Llama2Device::init_LLM(const std::string &model_path)
 {
     // number of layers to offload to the GPU
-    int ngl _ 99;
+    int ngl = 99;
     // number of tokens to predict
     int n_predict = 32;
     // initialize the model
-    llama_model_params model_params = llama_model_default_params();
+    model_params = llama_model_default_params();
     model_params.n_gpu_layers = ngl;
 
     llama_model * model = llama_load_model_from_file(model_path.c_str(), model_params);
@@ -124,6 +124,9 @@ bool Llama2Device::init_LLM(const std::string &model_path)
 
 bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAnswer)
 {
+    // debug parameters, these will need to be passed to the function
+    std::string prompt = "Hello my name is";
+    int n_predict = 32;
     // tokenize the prompt
     // find the number of tokens in the prompt
     const int n_prompt = -llama_tokenize(model, prompt.c_str(), prompt.size(), NULL, 0, true, true);
@@ -161,7 +164,7 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
     // initialize the sampler
     auto sparams = llama_sampler_chain_default_params();
     sparams.no_perf = false;
-    llama_sampler * smpl = llama_sampler_chain_init();
+    llama_sampler * smpl = llama_sampler_chain_init(sparams);
 
     llama_sampler_chain_add(smpl, llama_sampler_init_greedy());
 
@@ -327,9 +330,10 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
 
 bool Llama2Device::setPrompt(const std::string &prompt)
 {
+    /*
     //setting up the command for the prompt setting
     std::string aPrompt;
-    gpt_params params;
+    //gpt_params params;
     // total lenght of the sequence including the prompt
     const int n_len = 32;
 
@@ -341,7 +345,7 @@ bool Llama2Device::setPrompt(const std::string &prompt)
 
     try
     {
-        params.prompt = prompt;
+        model_params.prompt = prompt;
     }
     catch(const std::exception& e)
     {
@@ -351,17 +355,17 @@ bool Llama2Device::setPrompt(const std::string &prompt)
     // tokenize the prompt
     std::vector<llama_token> token_list;
 
-    tokens_list = ::llama_tokenize(ctx, params.prompt, true);
+    tokens_list = ::llama_tokenize(ctx, model_params.prompt, true);
 
     const int n_ctx = llama_n_ctx(ctx);
     const int n_kv_req = tokens_list.size() + (n_len - tokens_list.size());
 
-    LOG_TEE("\n%s: n_len = %d, n_ctx = %d, n_kv_req = %d\n", __func__, n_len, n_ctx, n_kv_req);
+    //LOG_TEE("\n%s: n_len = %d, n_ctx = %d, n_kv_req = %d\n", __func__, n_len, n_ctx, n_kv_req);
 
     // make sure the KV cache is big enough to hold all the prompt and generated tokens
     if (n_kv_req > n_ctx) {
-        LOG_TEE("%s: error: n_kv_req > n_ctx, the required KV cache size is not big enough\n", __func__);
-        LOG_TEE("%s: either reduce n_len or increase n_ctx\n", __func__);
+        //LOG_TEE("%s: error: n_kv_req > n_ctx, the required KV cache size is not big enough\n", __func__);
+        //LOG_TEE("%s: either reduce n_len or increase n_ctx\n", __func__);
         return 1;
     }
     // llama_decode will output logits only for the last token of the prompt
@@ -372,12 +376,12 @@ bool Llama2Device::setPrompt(const std::string &prompt)
         return 1;
     }
     conversation_log.emplace_back(Author::User, prompt);
-
+    */
     return true;
 }
 
 bool Llama2Device::readPrompt(std::string &oPrompt)
-{
+{   /*
     // print the prompt token-by-token
 
     fprintf(stderr, "\n");
@@ -387,7 +391,7 @@ bool Llama2Device::readPrompt(std::string &oPrompt)
     }
 
     fflush(stderr);
-
+    */
     return true;
 }
 
