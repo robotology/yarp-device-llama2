@@ -80,7 +80,7 @@ bool Llama2Device::init_LLM(const std::string &model_path)
     model_params = llama_model_default_params();
     model_params.n_gpu_layers = ngl;
 
-    llama_model * model = llama_load_model_from_file(model_path.c_str(), model_params);
+    model = llama_load_model_from_file(model_path.c_str(), model_params);
 
     // check if model is found
     if (model == NULL){
@@ -98,15 +98,19 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
 {
     // debug parameters, these will need to be passed to the function
     std::string prompt = "Hello my name is";
+    int ngl = 99;
     int n_predict = 32;
+    
     // tokenize the prompt
     // find the number of tokens in the prompt
     yCInfo(LLAMA2DEVICE) << "line 104";
+    yCInfo(LLAMA2DEVICE) << prompt;
+    yCInfo(LLAMA2DEVICE) << prompt.size();
     const int n_prompt = -llama_tokenize(model, prompt.c_str(), prompt.size(), NULL, 0, true, true);
     yCInfo(LLAMA2DEVICE) << "line 105";
     // allocate space for the tokens and tokenize the prompt
     std::vector<llama_token> prompt_tokens(n_prompt);
-    if(llama_tokenize(model, prompt.c_str(), prompt.size(), NULL, 0, true, true) < 0){
+    if(llama_tokenize(model, prompt.c_str(), prompt.size(), prompt_tokens.data(), prompt_tokens.size(), true, true) < 0){
         yCError(LLAMA2DEVICE) << "Error: failed to tokenize the prompt";
         return false;
     }
@@ -150,7 +154,7 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
             return false;
         }
         std::string s(buf, n);
-        yCInfo(LLAMA2DEVICE) << "%s", s.c_str();
+        yCInfo(LLAMA2DEVICE) << s;
     }
 
     // prepare a batch for the prompt
@@ -186,7 +190,7 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
                 return false;
             }
             std::string s(buf, n);
-            yCInfo(LLAMA2DEVICE) << "%s", s.c_str();
+            yCInfo(LLAMA2DEVICE) << s;
             //fflush(stdout);
 
             // prepare the next batch with the sampled token

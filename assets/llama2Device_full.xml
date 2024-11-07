@@ -16,7 +16,7 @@
                 llama2context
             </param>
         </device>
-        <!--<device name="LLM_nws" type="LLM_nws_yarp">
+        <device name="LLM_nws" type="LLM_nws_yarp">
 			<param extern-name="LLMNwsYarp_name" name="name">
 				/LLM_nws/rpc
 			</param>
@@ -28,6 +28,6 @@
 				</paramlist>
 			</action>
 			<action phase="shutdown" level="5" type="detach" />
-		</device>-->
+		</device>
     </devices>
 </robot>
