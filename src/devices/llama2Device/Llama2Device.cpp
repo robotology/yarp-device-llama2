@@ -22,8 +22,6 @@
 using namespace yarp::os;
 using namespace yarp::dev;
 
-//llama_context *ctx = nullptr;
-
 YARP_LOG_COMPONENT(LLAMA2DEVICE, "yarp.llama2Device", yarp::os::Log::TraceType);
 
 
@@ -55,8 +53,6 @@ bool Llama2Device::open(yarp::os::Searchable &config)
         innerFilePath = findXml.findFileByName(cfg.find("testxml_from").asString()); //file is found simply passing the context and its name, no need for full file path
         std::ifstream xmlFile(innerFilePath);
     }
-
-    yCInfo(LLAMA2DEVICE) << "Open method";
 
     std::string model_path = "/home/leonardo/Repos/yarp-device-llama2/models/contexts/llama2/llama-2-7b-chat.Q2_K.gguf"; 
     init_LLM(model_path);
@@ -103,11 +99,7 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
     
     // tokenize the prompt
     // find the number of tokens in the prompt
-    yCInfo(LLAMA2DEVICE) << "line 104";
-    yCInfo(LLAMA2DEVICE) << prompt;
-    yCInfo(LLAMA2DEVICE) << prompt.size();
     const int n_prompt = -llama_tokenize(model, prompt.c_str(), prompt.size(), NULL, 0, true, true);
-    yCInfo(LLAMA2DEVICE) << "line 105";
     // allocate space for the tokens and tokenize the prompt
     std::vector<llama_token> prompt_tokens(n_prompt);
     if(llama_tokenize(model, prompt.c_str(), prompt.size(), prompt_tokens.data(), prompt_tokens.size(), true, true) < 0){
@@ -217,92 +209,6 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
     llama_free_model(model);
 
     return true;
-
-
-
-    /*
-    // tokenize the question
-    std::vector<llama_token> token_list = ::llama_tokenize(ctx, question, true);
-    // prepare input tokens
-    std::vector<llama_token> input_tokens = tokens_list;
-    yCInfo(LLAMA2DEVICE) << "Question: " << question;
-    input_tokens.push_back(llama_token_eos(model));
-    int n_past = 0;
-    //int n_remain = params.n_predict;
-    int n_remain = 32;
-    yCInfo(LLAMA2DEVICE) << n_remain;
-
-    std::vector<llama_token> embd;
-    std::ostringstream output_ss;
-    yCInfo(LLAMA2DEVICE) << embd;
-
-    while(n_remain > 0){
-        if (!embd.empty()){
-            // evaluate the current batch of tokens
-            llama_batch batch;
-            batch.token = embd.data();
-            batch.logits = nullptr;
-            batch.n_tokens = static_cast<int32_t>(embd.size());
-             yCInfo(LLAMA2DEVICE) << llama_decode(ctx, batch);
-            if(llama_decode(ctx, batch) != 0){
-                std::cerr << "Failed to decode tokens." << std::endl;
-                return false;
-            }
-            n_past += embd.size();
-            embd.clear();
-        }
-
-        float *logits = llama_get_logits(ctx);
-        if(!logits){
-            std::cerr << "Failed to get logits." << std::endl;
-            return false;
-        }
-
-        int n_vocab =  llama_n_vocab(model);
-        std::vector<llama_token_data> candidates_data(n_vocab);
-        for(int i = 0; i < n_vocab; ++i){
-            candidates_data[i]  = {i,logits[i], 0.0f};
-        }
-
-        // get the logits and sample the next token
-        llama_token_data_array candidates = {candidates_data.data(), candidates_data.size(), false};
-
-        llama_sample_softmax(ctx, &candidates);  // Compute softmax probabilities
-        llama_token new_token_id = llama_sample_token(ctx, &candidates);
-
-        // append the new token to the embedding
-        embd.push_back(new_token_id);
-        output_ss << llama_token_to_piece(ctx, new_token_id);
-        yCInfo(LLAMA2DEVICE) << embd;
-        // decrement the remaining tokens and predict
-        --n_remain;
-        yCInfo(LLAMA2DEVICE) << n_remain;
-        // stop if eos token is generated
-        if(new_token_id == llama_token_eos(model)){
-            break;
-        }
-    }
-    */
-
-    /*
-    oAnswer.type =  "assistant";
-    oAnswer.content = output_ss.str();
-    oAnswer.parameters.clear();
-    oAnswer.arguments.clear();
-
-    oAnswer = yarp::dev::LLM_Message{"assistant", output_ss.str(), std::vector<std::string>(), std::vector<std::string>()};
-    std::pair log{Author::User, question};
-    std::pair log2{Author::Model, oAnswer.content};
-    // oAnswer = output_ss.str();
-    //conversation_log.emplace_back(Author::User, Content(question));
-    //conversation_log.emplace_back(Author::Model, oAnswer);
-    yCInfo(LLAMA2DEVICE) << "Answer: " << oAnswer.content;
-    //yCInfo(LLAMA2DEVICE) << output_ss.str();
-    yCInfo(LLAMA2DEVICE) << n_remain;
-    conversation_log.emplace_back(log);
-    conversation_log.emplace_back(log2);
-    return true;
-    */
 }
 
 bool Llama2Device::setPrompt(const std::string &prompt)
