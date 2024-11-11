@@ -65,9 +65,11 @@ private:
     std::string model_path;
     llama_model *model;
     llama_batch batch = llama_batch_init(512, 0, 1);
-    //gpt_params params;
     std::vector<std::pair<Author, Content>> conversation_log;
     llama_model_params model_params;
+    std::string prompt;
+    int ngl;
+    int n_predict;
 };
 
 
