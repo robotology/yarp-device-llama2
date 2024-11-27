@@ -76,5 +76,6 @@ find_package(Doxygen)
 add_subdirectory(src)
 #add_subdirectory(doc)
 add_subdirectory(tests)
+#add_subdirectory(models)
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES)

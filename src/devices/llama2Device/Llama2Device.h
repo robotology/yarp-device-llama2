@@ -41,13 +41,16 @@ public:
     ~Llama2Device() override = default;
 
     // Rpc methods
-    bool setPrompt(const std::string &prompt);
+    bool setPrompt(const std::string &prompt_add);
+    
 
-    bool readPrompt(std::string &oPrompt);
+    //bool readPrompt(std::string &oPrompt);
+    bool readPrompt();
 
     bool ask(const std::string &question, yarp::dev::LLM_Message &oAnswer);
 
-    bool getConversation(std::vector<yarp::dev::LLM_Message> &oConversation);
+    //bool getConversation(std::vector<yarp::dev::LLM_Message> &oConversation);
+    bool getConversation();
 
     bool deleteConversation() noexcept;
 
@@ -68,8 +71,10 @@ private:
     std::vector<std::pair<Author, Content>> conversation_log;
     llama_model_params model_params;
     std::string prompt;
+    std::string conversation;
     int ngl;
     int n_predict;
+    bool prompt_set = false;
 };
 
 

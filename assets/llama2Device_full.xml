@@ -9,12 +9,12 @@
 <robot name="llama2Device" build="2" portprefix="/llama2Device" xmlns:xi="http://www.w3.org/2001/XInclude">
     <devices>
         <device name="llama2_device" type="llama2Device">
-            <!--<param name="model_name">
-                ggml-model-Q4_K_M.gguf
-            </param>-->
-            <param name="model_context">
-                llama2context
+            <param name="model_name">
+                /home/leonardo/Repos/yarp-device-llama2/models/contexts/llama2/speechless-llama2-13b.Q4_K_M.gguf
             </param>
+            <!--<param name="model_context">
+                llama2context
+            </param>-->
         </device>
         <device name="LLM_nws" type="LLM_nws_yarp">
 			<param extern-name="LLMNwsYarp_name" name="name">
