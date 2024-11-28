@@ -41,7 +41,7 @@ public:
     ~Llama2Device() override = default;
 
     // Rpc methods
-    bool setPrompt(const std::string &prompt) override;
+    bool setPrompt(const std::string &prompt);
 
     bool readPrompt(std::string &oPrompt);
 

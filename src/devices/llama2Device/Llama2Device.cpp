@@ -34,11 +34,8 @@ bool Llama2Device::open(yarp::os::Searchable &config)
 {
     if (!parseParams(config))  { return false; }
 
+    // initialize LLM
     init_LLM(m_model_name);
-    yCInfo(LLAMA2DEVICE) << m_model_name;
-
-    //prompt = "Describe Rome";
-    // std::string add_to_prompt = "You are a Roman soldier from 400 BC";
 
     return true;
 }
@@ -56,7 +53,7 @@ bool Llama2Device::init_LLM(const std::string &model_path)
 
     model = llama_load_model_from_file(m_model_name.c_str(), model_params);
 
-    // check if model is found
+    // check if model is found, if not return an error message
     if (model == NULL){
         yCError(LLAMA2DEVICE) << "Error: unable to find model!";
         return false;
@@ -76,7 +73,6 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
         model_question += " " + m_prompt.content;
     }
 
-    //conversation = conversation + "\n" + "Prompt: " + prompt + "\n";
     // add question to the conversation
     addMessage(m_conversation, "user", question);
 
@@ -131,8 +127,6 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
             yCError(LLAMA2DEVICE) << "Error: failed to convert token to piece";
             return false;
         }
-
-        //final_output += std::string(buf, n);
     }
 
     // prepare a batch for the prompt
@@ -168,7 +162,8 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
                 return false;
             }
 
-            final_output += std::string(buf, n); // accumulate tokens
+            // accumulate tokens
+            final_output += std::string(buf, n);
 
             // prepare the next batch with the sampled token
             batch = llama_batch_get_one(&new_token_id, 1);
@@ -198,7 +193,7 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
 
     const auto t_main_end = ggml_time_us();
 
-    //conversation = conversation + "Answer: " + final_output + "\n";
+    // add model answer to the conversation
     addMessage(m_conversation, "assistant", final_output);
 
     // write model answer inside oAnswer
@@ -208,35 +203,33 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
     return true;
 }
 
-void addMessage(std::vector<yarp::dev::LLM_Message>& conversation, const std::string& type, const std::string& content) {
-    yarp::dev::LLM_Message message;
-    message.type = type;
-    message.content = content;
-    conversation.push_back(message);
-}
-
 
 bool Llama2Device::setPrompt(const std::string &prompt)
 {
+    // check if a prompt is already set
     if(prompt_set == true){
         yCError(LLAMA2DEVICE)<< "A prompt is already set. You must delete conversation first";
         return true;
     }
     // if the prompt is not already set, set the prompt
     prompt_set = true;
+
     m_prompt.type = "System";
     m_prompt.content = prompt;
-    //prompt = prompt + prompt_add;
+
     // add prompt to the conversation
     addMessage(m_conversation, "system", prompt);
+    
     return true;
 }
 
 
 bool Llama2Device::readPrompt(std::string &oPrompt)
 {   
+    // check if the prompt is set
     if(prompt_set == false){
         yCError(LLAMA2DEVICE) << "Prompt is not set";
+        return true;
     }
     // if prompt is set, read it
     oPrompt = m_prompt.content;
@@ -247,25 +240,28 @@ bool Llama2Device::readPrompt(std::string &oPrompt)
 
 bool Llama2Device::getConversation(std::vector<yarp::dev::LLM_Message> &oConversation)
 {
-    if(oConversation.empty()){
+    // check if the conversation is empty
+    if(m_conversation.empty()){
         yCInfo(LLAMA2DEVICE) << "The conversation is empty";
         return true;
     }
 
+    // if the conversation is not empty, print it
     for (const auto& msg : oConversation) {
         yCInfo(LLAMA2DEVICE) << "Role: " << msg.type;
         yCInfo(LLAMA2DEVICE) << "Content: " << msg.content;
         yCInfo(LLAMA2DEVICE) << "-------------------";
     }
-    //yCInfo(LLAMA2DEVICE) << conversation;
-    //std::vector<yarp::dev::LLM_Message> conversation;
-    //oConversation = conversation;
+    
+    // set the value of the conversation
+    oConversation = m_conversation;
     return true;
 }
 
 
 bool Llama2Device::deleteConversation() noexcept
 {
+    // check if the conversation is empty
     if (m_conversation.empty()){
         yCInfo(LLAMA2DEVICE) << "Conversation is already empty";
         return true;
@@ -303,4 +299,11 @@ void Llama2Device::help() {
     std::cout << "   - Prints the last prompt provided to the model" << std::endl;
     std::cout << "6. help" << std::endl;
     std::cout << "   - Prints the list of possible commands and their description." << std::endl;
+}
+
+void addMessage(std::vector<yarp::dev::LLM_Message>& conversation, const std::string& type, const std::string& content) {
+    yarp::dev::LLM_Message message;
+    message.type = type;
+    message.content = content;
+    conversation.push_back(message);
 }
