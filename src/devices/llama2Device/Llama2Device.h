@@ -41,18 +41,17 @@ public:
     ~Llama2Device() override = default;
 
     // Rpc methods
-    bool setPrompt(const std::string &prompt_add);
-    
+    bool setPrompt(const std::string &prompt);
 
-    //bool readPrompt(std::string &oPrompt);
-    bool readPrompt();
+    bool readPrompt(std::string &oPrompt);
 
     bool ask(const std::string &question, yarp::dev::LLM_Message &oAnswer);
 
-    //bool getConversation(std::vector<yarp::dev::LLM_Message> &oConversation);
-    bool getConversation();
+    bool getConversation(std::vector<yarp::dev::LLM_Message> &oConversation);
 
     bool deleteConversation() noexcept;
+
+    bool refreshConversation() noexcept;
 
     // ILLM methods
     bool init_LLM(const std::string &model_path);
@@ -62,6 +61,8 @@ public:
     bool close() override;
     void help();
 
+    void addMessage(std::vector<yarp::dev::LLM_Message>& conversation, const std::string& type, const std::string& content);
+
 private:
     llama_context *ctx;
     std::vector<llama_token> tokens_list;
@@ -70,11 +71,15 @@ private:
     llama_batch batch = llama_batch_init(512, 0, 1);
     std::vector<std::pair<Author, Content>> conversation_log;
     llama_model_params model_params;
-    std::string prompt;
+    //std::string prompt;
     std::string conversation;
+    std::string model_question;
     int ngl;
     int n_predict;
     bool prompt_set = false;
+    std::vector<yarp::dev::LLM_Message> m_conversation;
+    yarp::dev::LLM_Message m_prompt;
+    //yarp::dev::LLM_Message oAnswer;
 };
 
 
