@@ -30,7 +30,8 @@ using Answer = yarp::dev::LLM_Message;
 
 class Llama2Device :
         public yarp::dev::DeviceDriver,
-        public Llama2Device_ParamsParser
+        public Llama2Device_ParamsParser,
+        public yarp::dev::ILLM
 {
 public:
     Llama2Device();
@@ -41,17 +42,17 @@ public:
     ~Llama2Device() override = default;
 
     // Rpc methods
-    bool setPrompt(const std::string &prompt);
+    bool setPrompt(const std::string &prompt) override;
 
-    bool readPrompt(std::string &oPrompt);
+    bool readPrompt(std::string &oPrompt) override;
 
-    bool ask(const std::string &question, yarp::dev::LLM_Message &oAnswer);
+    bool ask(const std::string &question, yarp::dev::LLM_Message &oAnswer) override;
 
-    bool getConversation(std::vector<yarp::dev::LLM_Message> &oConversation);
+    bool getConversation(std::vector<yarp::dev::LLM_Message> &oConversation) override;
 
-    bool deleteConversation() noexcept;
+    bool deleteConversation() noexcept override;
 
-    bool refreshConversation() noexcept;
+    bool refreshConversation() noexcept override;
 
     // ILLM methods
     bool init_LLM(const std::string &model_path);
@@ -61,7 +62,7 @@ public:
     bool close() override;
     void help();
 
-    void addMessage(std::vector<yarp::dev::LLM_Message>& conversation, const std::string& type, const std::string& content);
+    void convAdd(std::vector<yarp::dev::LLM_Message>& conversation, const std::string& type, const std::string& content);
 
 private:
     llama_context *ctx;
