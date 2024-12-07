@@ -33,7 +33,8 @@ Llama2Device::Llama2Device()
 bool Llama2Device::open(yarp::os::Searchable &config)
 {
     if (!parseParams(config))  { return false; }
-
+    // use if want to run with gemma
+    // m_model_name = "/home/leonardo/Repos/yarp-device-llama2/models/gemma/gemma-2b-it.gguf";
     // initialize LLM
     init_LLM(m_model_name);
 

@@ -10,10 +10,11 @@
     <devices>
         <device name="llama2_device" type="llama2Device">
             <param name="model_name">
-                /home/leonardo/Repos/yarp-device-llama2/models/llama2/speechless-llama2-13b.Q4_K_M.gguf
+                /home/leonardo/Repos/yarp-device-llama2/models/gemma/gemma-2b-it.gguf
             </param>
             <!--<param name="model_context">
                 llama2context
+                /home/leonardo/Repos/yarp-device-llama2/models/llama2/speechless-llama2-13b.Q4_K_M.gguf
             </param>-->
         </device>
         <device name="LLM_nws" type="LLM_nws_yarp">
@@ -21,7 +22,7 @@
 				/LLM_nws/rpc
 			</param>
 			<action phase="startup" level="5" type="attach">
-				<paramlist name="networks">
+				<paramlist name="networks">echo
 					<elem name="subdeviceLLM">
 						llama2_device
 					</elem>
