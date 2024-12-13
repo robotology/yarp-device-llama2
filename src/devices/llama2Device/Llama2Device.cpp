@@ -61,6 +61,7 @@ bool Llama2Device::init_LLM(const std::string &model_path)
     }
     else{
         yCInfo(LLAMA2DEVICE) << "Model correctly intialized";
+        initialized = true;
     }
 
     return true;
@@ -215,17 +216,17 @@ bool Llama2Device::setPrompt(const std::string &prompt)
     // check if a prompt is already set
     if(prompt_set == true){
         yCError(LLAMA2DEVICE)<< "A prompt is already set. You must delete conversation first";
-        return true;
+        return false;
     }
     // if the prompt is not already set, set the prompt
     prompt_set = true;
 
-    m_prompt.type = "System";
+    m_prompt.type = "system";
     m_prompt.content = prompt;
 
     // add prompt to the conversation
     yarp::dev::LLM_Message message;
-    message.type = "prompt";
+    message.type = "system";
     message.content = prompt;
     m_conversation.push_back(message);
     
@@ -238,7 +239,7 @@ bool Llama2Device::readPrompt(std::string &oPrompt)
     // check if the prompt is set
     if(prompt_set == false){
         yCError(LLAMA2DEVICE) << "Prompt is not set";
-        return true;
+        return false;
     }
     // if prompt is set, read it
     oPrompt = m_prompt.content;
@@ -252,7 +253,7 @@ bool Llama2Device::getConversation(std::vector<yarp::dev::LLM_Message> &oConvers
     // check if the conversation is empty
     if(m_conversation.empty()){
         yCInfo(LLAMA2DEVICE) << "The conversation is empty";
-        return true;
+        return false;
     }
 
     // if the conversation is not empty, print it

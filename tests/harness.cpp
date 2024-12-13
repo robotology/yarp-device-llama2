@@ -207,3 +207,6 @@ int main(int argc, char *argv[])
     assertions_failed = std::min(assertions_failed - yarp_tests_skipped, 253);
     return (assertions_failed ? assertions_failed : (yarp_tests_skipped ? 254 : 0));
 }
+
+
+

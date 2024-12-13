@@ -1,13 +1,13 @@
 name: CI Workflow
 
 on:
-  # push:
-  # pull_request:
+  push:
+  pull_request:
   workflow_dispatch:
-  # schedule:
+  schedule:
   # * is a special character in YAML so you have to quote this string
   # Execute a "nightly" build at 2 AM UTC
-  # - cron:  '0 2 * * *'
+  - cron:  '0 2 * * *'
 
 jobs:
 
@@ -100,6 +100,14 @@ jobs:
         cmake --build . --config ${{ matrix.build_type }}
         cmake --install . --config ${{ matrix.build_type }}
         echo "YARP_DATA_DIRS=${CONDA_PREFIX}/share/yarp::${YARP_DATA_DIRS}" >> $GITHUB_ENV
+        #llamacpp
+        cd ${GITHUB_WORKSPACE}
+        git clone https://github.com/ggerganov/llama.cpp.git
+        cd llama.cpp
+        cmake -B build
+        cmake --build build --config Release
+
+
 
     - name: Dependencies from source [Windows]
       if: contains(matrix.os, 'windows')
