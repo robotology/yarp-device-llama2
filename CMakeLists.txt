@@ -73,6 +73,9 @@ yarp_configure_external_installation(${PROJECT_NAME})
 
 find_package(Doxygen)
 
+# add_subdirectory(llama.cpp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/llama.cpp)
+
 add_subdirectory(src)
 #add_subdirectory(doc)
 add_subdirectory(tests)
