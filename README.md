@@ -16,6 +16,12 @@ Documentation of the individual devices is provided in the official Yarp documen
 
 Installation
 -------------
+To install Llama2Device we simply need to clone this repository and run setup_submodule.sh:
+~~~
+# Clone the correct version of llama.cpp library
+./setup_submodule.sh
+~~~
+this file clones llama.cpp library to a specific working version. It is recommended to stick to this version and not to use a newer one since the functioning is not guaranteed.
 
 ### Build with pure CMake commands
 
@@ -24,6 +30,45 @@ Installation
 cmake -S. -Bbuild -DCMAKE_INSTALL_PREFIX=<install_prefix>
 cmake --build build
 cmake --build build --target install
+~~~
+These commands will compile and install llama.cpp library and Llama2Device.
+
+Configuration
+-------------
+
+The device is able to run every .gguf LLM model.
+The models can be downloaded from [huggingface](https://huggingface.co/models?library=gguf&sort=trending).
+The downloaded model must be placed inside models folder.
+
+Usage
+---------
+
+Assuming that the user has already installed [YARP](https://www.github.com/robotology/yarp) and the related LLM devices, one can use this basic configuration example:
+~~~
+yarpserver
+~~~
+
+~~~
+yarprobotinterface --config assets/llama2Device_full.xml
+~~~
+
+~~~
+yarp rpc /LLM_nws/rpc/rpc:i
+>>help
+Responses:
+  *** Available commands:
+  setPrompt
+  readPrompt
+  ask
+  getConversation
+  deleteConversation
+  refreshConversation
+  help
+>>
+>>setPrompt "You are a geography expert who is very concise in its answers"
+Response: [ok]
+>>ask "What is the capital of Germany?"
+Response: [ok] Berlin.
 ~~~
 
 CI Status
