@@ -274,7 +274,7 @@ bool Llama2Device::deleteConversation() noexcept
     // check if the conversation is empty
     if (m_conversation.empty()){
         yCInfo(LLAMA2DEVICE) << "Conversation is already empty";
-        return true;
+        return false;
     }
     // if not empty, clear the conversation
     m_conversation.clear();

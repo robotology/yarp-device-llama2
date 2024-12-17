@@ -33,12 +33,15 @@ if(NOT SKIP_llama2Device)
   PUBLIC
     "${LLAMA_INCLUDE_PATH}"
     ${CMAKE_PREFIX_PATH}/include
-    "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/llama.cpp/common"
-    "${CMAKE_CURRENT_SOURCE_DIR}/llama.cpp/include"
+    "${CMAKE_SOURCE_DIR}"
+    "${CMAKE_SOURCE_DIR}/llama.cpp/common"
+    "${CMAKE_SOURCE_DIR}/llama.cpp/include"
     # "/home/leonardo/Repos/llama.cpp/common"
     # "/home/leonardo/Repos/llama.cpp/include"
   )
+  message(STATUS "LLAMA_INCLUDE_PATH: ${LLAMA_INCLUDE_PATH}")
+message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+
 
   target_link_libraries(yarp_llama2Device
     PRIVATE
