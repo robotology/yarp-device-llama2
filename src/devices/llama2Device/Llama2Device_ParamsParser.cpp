@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Thu Jan  9 17:33:10 2025
+// Generated on: Thu Jan  9 18:21:33 2025
 
 
 #include "Llama2Device_ParamsParser.h"
