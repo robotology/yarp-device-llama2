@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Thu Jan  9 17:25:14 2025
+// Generated on: Thu Jan  9 17:33:10 2025
 
 
 #include "Llama2Device_ParamsParser.h"
@@ -31,6 +31,7 @@ std::vector<std::string> Llama2Device_ParamsParser::getListOfParams() const
     params.push_back("model_context");
     params.push_back("model_name");
     params.push_back("npredict");
+    params.push_back("progress_bar");
     return params;
 }
 
@@ -87,6 +88,20 @@ bool      Llama2Device_ParamsParser::parseParams(const yarp::os::Searchable & co
         prop_check.unput("npredict");
     }
 
+    //Parser of parameter progress_bar
+    {
+        if (config.check("progress_bar"))
+        {
+            m_progress_bar = config.find("progress_bar").asBool();
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'progress_bar' using value:" << m_progress_bar;
+        }
+        else
+        {
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'progress_bar' using DEFAULT value:" << m_progress_bar;
+        }
+        prop_check.unput("progress_bar");
+    }
+
     /*
     //This code check if the user set some parameter which are not check by the parser
     //If the parser is set in strict mode, this will generate an error
@@ -126,9 +141,10 @@ std::string      Llama2Device_ParamsParser::getDocumentationOfDeviceParams() con
     doc = doc + std::string("'model_context': Context of Llama2 model\n");
     doc = doc + std::string("'model_name': Yes\n");
     doc = doc + std::string("'npredict': No\n");
+    doc = doc + std::string("'progress_bar': No\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <optional_value> --npredict 64\n";
+    doc = doc + " yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <optional_value> --npredict 64 --progress_bar 0\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device yarp_llama2Device\n";
     doc = doc + std::string("=============================================\n\n");    return doc;

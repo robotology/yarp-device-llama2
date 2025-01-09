@@ -15,10 +15,6 @@
             <param name="npredict">
                 100
             </param>
-            <!--<param name="model_context">
-                llama2context
-                /home/leonardo/Repos/yarp-device-llama2/models/llama2/speechless-llama2-13b.Q4_K_M.gguf
-            </param>-->
         </device>
         <device name="LLM_nws" type="LLM_nws_yarp">
 			<param extern-name="LLMNwsYarp_name" name="name">

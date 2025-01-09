@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Thu Jan  9 17:25:14 2025
+// Generated on: Thu Jan  9 17:33:10 2025
 
 
 #ifndef LLAMA2DEVICE_PARAMSPARSER_H
@@ -28,10 +28,11 @@
 * | -          | model_context  | string | -     | -             | 0        | Context of Llama2 model | Here are additional notes |
 * | -          | model_name     | string | -     | -             | 0        | Yes                     | Here are additional notes |
 * | -          | npredict       | int    | -     | 64            | 0        | No                      | Here are additional notes |
+* | -          | progress_bar   | bool   | -     | 0             | 0        | No                      | Here are additional notes |
 *
 * The device can be launched by yarpdev using one of the following examples (with and without all optional parameters):
 * \code{.unparsed}
-* yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <optional_value> --npredict 64
+* yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <optional_value> --npredict 64 --progress_bar 0
 * \endcode
 *
 * \code{.unparsed}
@@ -60,10 +61,12 @@ public:
     const std::string m_model_context_defaultValue = {""};
     const std::string m_model_name_defaultValue = {""};
     const std::string m_npredict_defaultValue = {"64"};
+    const std::string m_progress_bar_defaultValue = {"0"};
 
     std::string m_model_context = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
     std::string m_model_name = {}; //This default value of this string is an empty string. It is highly recommended to provide a suggested value also for optional string parameters.
     int m_npredict = {64};
+    bool m_progress_bar = {0};
 
     bool          parseParams(const yarp::os::Searchable & config) override;
     std::string   getDeviceClassName() const override { return m_device_classname; }

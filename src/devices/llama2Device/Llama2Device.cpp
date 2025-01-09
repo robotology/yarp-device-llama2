@@ -171,6 +171,7 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
 
             n_decode += 1;
 
+            if (m_progress_bar == 1){
             // compute progress bar percentage
             int progress = static_cast<int>(100.0 * n_decode / n_predict);
 
@@ -187,6 +188,7 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
             progress_bar += "] " + std::to_string(progress) + "%";
 
             yCInfo(LLAMA2DEVICE) << progress_bar;
+            }
         }
     }
 
