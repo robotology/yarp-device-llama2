@@ -12,6 +12,9 @@
             <param name="model_name">
                 /home/leonardo/Repos/yarp-device-llama2/models/gemma/gemma-2b-it.gguf
             </param>
+            <param name="npredict">
+                100
+            </param>
             <!--<param name="model_context">
                 llama2context
                 /home/leonardo/Repos/yarp-device-llama2/models/llama2/speechless-llama2-13b.Q4_K_M.gguf

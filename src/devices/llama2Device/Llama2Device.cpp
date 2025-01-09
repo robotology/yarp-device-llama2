@@ -6,8 +6,6 @@
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
-//#include <common/common.h>
-//#include "llama.h"
 #include "Llama2Device.h"
 #include <fstream>
 #include <yarp/os/LogComponent.h>
@@ -33,8 +31,6 @@ Llama2Device::Llama2Device()
 bool Llama2Device::open(yarp::os::Searchable &config)
 {
     if (!parseParams(config))  { return false; }
-    // use if want to run with gemma
-    // m_model_name = "/home/leonardo/Repos/yarp-device-llama2/models/gemma/gemma-2b-it.gguf";
     // initialize LLM
     init_LLM(m_model_name);
 
@@ -47,7 +43,7 @@ bool Llama2Device::init_LLM(const std::string &model_path)
     // number of layers to offload to the GPU
     ngl = 99;
     // number of tokens to predict
-    n_predict = 64;
+    n_predict = m_npredict;
     // initialize the model
     model_params = llama_model_default_params();
     model_params.n_gpu_layers = ngl;

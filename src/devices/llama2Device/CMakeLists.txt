@@ -36,8 +36,6 @@ if(NOT SKIP_llama2Device)
     "${CMAKE_SOURCE_DIR}"
     "${CMAKE_SOURCE_DIR}/llama.cpp/common"
     "${CMAKE_SOURCE_DIR}/llama.cpp/include"
-    # "/home/leonardo/Repos/llama.cpp/common"
-    # "/home/leonardo/Repos/llama.cpp/include"
   )
   message(STATUS "LLAMA_INCLUDE_PATH: ${LLAMA_INCLUDE_PATH}")
 message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
@@ -49,10 +47,6 @@ message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
       YARP::YARP_sig
       YARP::YARP_dev
       llama
-      #"${CMAKE_CURRENT_SOURCE_DIR}/llama.cpp/src/libllama.so"
-      #"${CMAKE_CURRENT_SOURCE_DIR}/llama.cpp/build/common/libcommon.a"
-      # "/home/leonardo/Repos/llama.cpp/build/src/libllama.so"
-      # "/home/leonardo/Repos/llama.cpp/build/common/libcommon.a"
   )
 
   yarp_install(
