@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Thu Jan  9 18:21:33 2025
+// Generated on: Fri Jan 10 09:16:53 2025
 
 
 #include "Llama2Device_ParamsParser.h"
@@ -32,6 +32,7 @@ std::vector<std::string> Llama2Device_ParamsParser::getListOfParams() const
     params.push_back("model_name");
     params.push_back("npredict");
     params.push_back("progress_bar");
+    params.push_back("ngl");
     return params;
 }
 
@@ -102,6 +103,20 @@ bool      Llama2Device_ParamsParser::parseParams(const yarp::os::Searchable & co
         prop_check.unput("progress_bar");
     }
 
+    //Parser of parameter ngl
+    {
+        if (config.check("ngl"))
+        {
+            m_ngl = config.find("ngl").asInt64();
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'ngl' using value:" << m_ngl;
+        }
+        else
+        {
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'ngl' using DEFAULT value:" << m_ngl;
+        }
+        prop_check.unput("ngl");
+    }
+
     /*
     //This code check if the user set some parameter which are not check by the parser
     //If the parser is set in strict mode, this will generate an error
@@ -142,9 +157,10 @@ std::string      Llama2Device_ParamsParser::getDocumentationOfDeviceParams() con
     doc = doc + std::string("'model_name': Yes\n");
     doc = doc + std::string("'npredict': No\n");
     doc = doc + std::string("'progress_bar': No\n");
+    doc = doc + std::string("'ngl': No\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <optional_value> --npredict 64 --progress_bar 0\n";
+    doc = doc + " yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <optional_value> --npredict 64 --progress_bar 0 --ngl 30\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device yarp_llama2Device\n";
     doc = doc + std::string("=============================================\n\n");    return doc;

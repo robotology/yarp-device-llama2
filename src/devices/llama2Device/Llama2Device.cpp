@@ -41,7 +41,7 @@ bool Llama2Device::open(yarp::os::Searchable &config)
 bool Llama2Device::init_LLM(const std::string &model_path)
 {
     // number of layers to offload to the GPU
-    ngl = 99;
+    ngl = m_ngl;
     // number of tokens to predict
     n_predict = m_npredict;
     // initialize the model
