@@ -33,6 +33,26 @@ cmake --build build --target install
 ~~~
 These commands will compile and install llama.cpp library and Llama2Device.
 
+Enable llama.cpp GPU computation
+-------------
+In order to allow llama.cpp to use the gpu power to compute the answers it is mandatory to follow these steps.
+Open project build folder, then type:
+~~~
+ccmake ..
+~~~
+Scroll down until you find the flag "GGML_CUDA ", turn it on, press "c" to configure and then "g" to generate.
+Now compile the project again using these instructions:
+ ~~~
+# Configure, compile and install
+cmake -S. -Bbuild -DCMAKE_INSTALL_PREFIX=<install_prefix>
+cmake --build build
+cmake --build build --target install
+~~~
+The library will automatically detect the gpu as a device and will use it to compute results faster.
+
+Note: it is mandatory to have an Nvidia gpu and have CUDA toolkit version > 10 installed.
+To install CUDA toolkit follow this [official guide](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/).
+
 Configuration
 -------------
 
