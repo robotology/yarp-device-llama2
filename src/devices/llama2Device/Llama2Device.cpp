@@ -65,11 +65,17 @@ bool Llama2Device::init_LLM(const std::string &model_path)
 
 bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAnswer)
 {
-    model_question = question;
+    std::string question_ask = question;
+    //model_question = question;
+
     // if prompt is set, add it to the question
     if(prompt_set == true){
-        model_question += " " + m_prompt.content;
+        // model_question += " " + m_prompt.content;
+        model_question += m_prompt.content;
+        model_question += question_ask;
     }
+
+    yCInfo(LLAMA2DEVICE) << model_question;
 
     // add question to the conversation
     yarp::dev::LLM_Message message;
@@ -97,6 +103,7 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
     llama_context_params ctx_params = llama_context_default_params();
     // n_ctx is the context size
     ctx_params.n_ctx = n_prompt + n_predict -1;
+    //ctx_params.n_ctx = 512;
     // n_batch is the maximum number of tokens that can be processed in a single call to llama_decode
     ctx_params.n_batch = n_prompt;
     // enable performance counters
