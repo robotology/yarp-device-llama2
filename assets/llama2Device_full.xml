@@ -13,7 +13,7 @@
                 /home/leonardo/Repos/yarp-device-llama2/models/llama2/Dolphin3.0-Llama3.2-3B-f16.gguf
             </param>
             <param name="npredict">
-                100
+                512
             </param>
         </device>
         <device name="LLM_nws" type="LLM_nws_yarp">
