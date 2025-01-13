@@ -77,6 +77,7 @@ private:
     int ngl;
     int n_predict;
     bool prompt_set = false;
+    bool new_prompt = true;
     bool initialized = false;
     std::vector<yarp::dev::LLM_Message> m_conversation;
     yarp::dev::LLM_Message m_prompt;

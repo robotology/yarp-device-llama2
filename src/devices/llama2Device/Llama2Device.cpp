@@ -73,6 +73,9 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
         model_question += question_ask;
     }
 
+    yCInfo(LLAMA2DEVICE) << "Question ask: " + question_ask;
+    yCInfo(LLAMA2DEVICE) << "Model question: " + model_question;
+
     // add question to the conversation
     yarp::dev::LLM_Message message;
     message.type = "user";
@@ -207,6 +210,8 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
     // write model answer inside oAnswer
     oAnswer.type = "assistant";
     oAnswer.content = final_output;
+
+    model_question = "";
 
     return true;
 }
