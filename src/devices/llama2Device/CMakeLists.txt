@@ -49,8 +49,9 @@ message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
       YARP::YARP_sig
       YARP::YARP_dev
       llama
-      #"${CMAKE_CURRENT_SOURCE_DIR}/llama.cpp/src/libllama.so"
-      #"${CMAKE_CURRENT_SOURCE_DIR}/llama.cpp/build/common/libcommon.a"
+      common
+      #"${CMAKE_SOURCE_DIR}/llama.cpp/src/libllama.so"
+      #"${CMAKE_SOURCE_DIR}/llama.cpp/build/common/libcommon.a"
       # "/home/leonardo/Repos/llama.cpp/build/src/libllama.so"
       # "/home/leonardo/Repos/llama.cpp/build/common/libcommon.a"
   )

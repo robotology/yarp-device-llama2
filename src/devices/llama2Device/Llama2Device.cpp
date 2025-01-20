@@ -14,6 +14,7 @@
 #include <yarp/os/LogStream.h>
 #include <yarp/os/ResourceFinder.h>
 #include "common.h"
+#include "arg.h"
 #include "sampling.h"
 
 #include <cmath>
@@ -26,8 +27,8 @@ using namespace yarp::dev;
 
 YARP_LOG_COMPONENT(LLAMA2DEVICE, "yarp.llama2Device", yarp::os::Log::TraceType);
 
-//static llama_context           ** g_ctx;
-//static llama_model             ** g_model;
+static llama_context           ** g_ctx;
+static llama_model             ** g_model;
 static common_sampler          ** g_smpl;
 static common_params            * g_params;
 static std::vector<llama_token> * g_input_tokens;
@@ -73,8 +74,42 @@ bool Llama2Device::init_LLM(const std::string &model_path)
         yCInfo(LLAMA2DEVICE) << "Model correctly intialized";
         initialized = true;
     }*/
+   // initialize the model
+   common_params params;
+   g_params = &params;
+   params.model = m_model_name;
+   common_params_parser_init(params, LLAMA_EXAMPLE_MAIN);
 
-    return true;
+   common_init();
+
+   auto & sparams = params.sparams;
+
+   llama_backend_init();
+   llama_numa_init(params.numa);
+
+   //llama_model * model = nullptr;
+   llama_context * ctx = nullptr;
+   common_sampler * smpl = nullptr;
+
+   std::vector<common_chat_msg> chat_msgs;
+
+   g_model = &model;  
+   g_ctx = &ctx;
+   g_smpl = &smpl;
+
+
+   common_init_result llama_init = common_init_from_params(params);
+
+   model = llama_init.model;
+   ctx = llama_init.context;
+
+   if (model == NULL) {
+        yCError(LLAMA2DEVICE) << "Error: unable to find model!";
+        return 1;
+    }
+   yCInfo(LLAMA2DEVICE) << "Model correctly intialized";
+
+   return true;
 }
 
 static bool file_exists(const std::string & path) {
@@ -91,20 +126,7 @@ static bool file_is_empty(const std::string & path) {
 
 bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAnswer)
 {
-    model_params = llama_model_default_params();
-    model_params.n_gpu_layers = ngl;
 
-    model = llama_load_model_from_file(m_model_name.c_str(), model_params);
-
-    // check if model is found, if not return an error message
-    if (model == NULL){
-        yCError(LLAMA2DEVICE) << "Error: unable to find model!";
-        return false;
-    }
-    else{
-        yCInfo(LLAMA2DEVICE) << "Model correctly intialized";
-        initialized = true;
-    }
 
     model_question = question;
     // if prompt is set, add it to the question
