@@ -65,13 +65,15 @@ public:
     void convAdd(std::vector<yarp::dev::LLM_Message>& conversation, const std::string& type, const std::string& content);
 
 private:
-    llama_context *ctx;
     std::vector<llama_token> tokens_list;
     std::string model_path;
     llama_model *model;
     llama_batch batch = llama_batch_init(512, 0, 1);
     std::vector<std::pair<Author, Content>> conversation_log;
     llama_model_params model_params;
+    common_params params;
+    common_sampler * smpl = nullptr;
+    llama_context * ctx = nullptr;
     std::string conversation;
     std::string model_question;
     int ngl;
