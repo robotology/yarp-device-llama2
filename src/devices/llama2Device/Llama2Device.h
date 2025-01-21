@@ -12,6 +12,7 @@
 #include "Llama2Device_ParamsParser.h"
 #include <llama.h>
 #include <common.h>
+#include "sampling.h"
 #include <vector>
 #include <string>
 #include <cstdio>
