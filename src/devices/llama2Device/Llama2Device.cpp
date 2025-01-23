@@ -118,14 +118,21 @@ static bool file_is_empty(const std::string & path) {
 
 bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAnswer)
 {
-    //common_init_result llama_init = common_init_from_params(params);
-    //ctx = llama_init.context;
-
+    ask_question = question;
     model_question = question;
     // if prompt is set, add it to the question
     if(prompt_set == true){
-        model_question += " " + m_prompt.content;
+        if(first_prompt_set == true){
+            model_question = m_prompt.content;
+            model_question += " " + ask_question;
+        }
+        first_prompt_set = false;
     }
+    else {
+        model_question = question;
+    }
+
+    yCInfo(LLAMA2DEVICE) << model_question;
 
     // add question to the conversation
     yarp::dev::LLM_Message message;
@@ -164,10 +171,6 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
 
     const int n_ctx_train = llama_n_ctx_train(model);
     const int n_ctx = llama_n_ctx(ctx);
-
-    if (n_ctx > n_ctx_train) {
-        printf("%s: model was trained on only %d context tokens (%d specified)\n", __func__, n_ctx_train, n_ctx);
-    }
 
     // print system information
     {
@@ -714,28 +717,6 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
     oAnswer.type = "assistant";
     oAnswer.content = final_output;
 
-    //common_perf_print(ctx, smpl);
-
-    //common_sampler_free(smpl);
-
-    //llama_free(ctx);
-    //llama_free_model(model);
-
-    //llama_backend_free();
-
-    //ggml_threadpool_free(threadpool);
-    //ggml_threadpool_free(threadpool_batch);
-
-    /*
-    // restore params
-    params.cpuparams.n_threads = 6;
-    params.n_ctx = 131072;
-    params.n_batch = 2048;
-    params.n_ubatch = 512;
-    params.n_predict = 30;
-    params.rope_freq_base = 500000.0;
-    params.cpuparams_batch.n_threads = 6;*/
-
     return true;
 }
 
@@ -749,6 +730,7 @@ bool Llama2Device::setPrompt(const std::string &prompt)
     }
     // if the prompt is not already set, set the prompt
     prompt_set = true;
+    first_prompt_set = true;
 
     m_prompt.type = "system";
     m_prompt.content = prompt;
@@ -808,6 +790,7 @@ bool Llama2Device::deleteConversation() noexcept
     // if not empty, clear the conversation
     m_conversation.clear();
     prompt_set = false;
+    first_prompt_set = false;
 
     yCInfo(LLAMA2DEVICE) << "Conversation deleted";
     return true;

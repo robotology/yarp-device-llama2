@@ -77,9 +77,11 @@ private:
     llama_context * ctx = nullptr;
     std::string conversation;
     std::string model_question;
+    std::string ask_question;
     int ngl;
     int n_predict;
     bool prompt_set = false;
+    bool first_prompt_set = false;
     bool initialized = false;
     std::vector<yarp::dev::LLM_Message> m_conversation;
     yarp::dev::LLM_Message m_prompt;
