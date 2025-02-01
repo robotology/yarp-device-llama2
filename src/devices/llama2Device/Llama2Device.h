@@ -75,6 +75,7 @@ private:
     common_params params;
     common_sampler * smpl = nullptr;
     llama_context * ctx = nullptr;
+    std::vector<common_chat_msg> chat_msgs;
     std::string conversation;
     std::string model_question;
     std::string ask_question;

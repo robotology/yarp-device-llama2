@@ -42,6 +42,8 @@ if(NOT SKIP_llama2Device)
   message(STATUS "LLAMA_INCLUDE_PATH: ${LLAMA_INCLUDE_PATH}")
 message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 
+find_package(CURL REQUIRED)
+target_link_libraries(yarp_llama2Device PRIVATE CURL::libcurl)
 
   target_link_libraries(yarp_llama2Device
     PRIVATE
