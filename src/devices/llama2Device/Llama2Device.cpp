@@ -39,7 +39,7 @@ using json = nlohmann::json;
 
 std::string extractContent(const std::string& jsonResponse) {
     try {
-        json parsedJson = json::parse(jsonResponse);  // Parsing del JSON
+        json parsedJson = json::parse(jsonResponse);  // JSON parsing
         return parsedJson["choices"][0]["message"]["content"].get<std::string>();
     } catch (const std::exception& e) {
         std::cerr << "Errore nel parsing del JSON: " << e.what() << std::endl;
@@ -53,7 +53,6 @@ size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
 }
 
 std::string sendPostRequest(const std::string& jsonData) {
-    yCInfo(LLAMA2DEVICE) << "Inside sendPostRequest";
     CURL *curl;
     CURLcode res;
     std::string responseString; 
@@ -63,8 +62,8 @@ std::string sendPostRequest(const std::string& jsonData) {
 
     if (curl) {
         const char* url = "http://localhost:8080/v1/chat/completions";
-        yCInfo(LLAMA2DEVICE) << "Invio richiesta a: " << url;
-        yCInfo(LLAMA2DEVICE) << "Dati JSON: " << jsonData;
+        yCInfo(LLAMA2DEVICE) << "Sending request to: " << url;
+        yCInfo(LLAMA2DEVICE) << "JSON data: " << jsonData;
 
         curl_easy_setopt(curl, CURLOPT_URL, url);
         curl_easy_setopt(curl, CURLOPT_POST, 1);
@@ -77,18 +76,18 @@ std::string sendPostRequest(const std::string& jsonData) {
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseString);
 
-        // DEBUG: Abilita il logging di cURL
+        // DEBUG: enable cURL logging
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
         res = curl_easy_perform(curl);
 
         if (res != CURLE_OK) {
-            yCInfo(LLAMA2DEVICE) << "Errore nella richiesta: " << curl_easy_strerror(res);
+            yCInfo(LLAMA2DEVICE) << "Error in the request: " << curl_easy_strerror(res);
         }
 
         long response_code;
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-        yCInfo(LLAMA2DEVICE) << "Codice risposta HTTP: " << response_code;
+        yCInfo(LLAMA2DEVICE) << "HTTP response code: " << response_code;
 
         curl_easy_cleanup(curl);
         curl_global_cleanup();
@@ -115,9 +114,7 @@ bool Llama2Device::init_LLM(const std::string &model_path)
     // number of tokens to predict
     n_predict = 64;
     // initialize the model
-    /*g_params = &params;
-    params.model = m_model_name;
-    params.cpuparams.n_threads = 6;
+    /*params.cpuparams.n_threads = 6;
     params.n_ctx = 131072;
     params.n_batch = 2048;
     params.n_ubatch = 512;
@@ -126,75 +123,49 @@ bool Llama2Device::init_LLM(const std::string &model_path)
     params.cpuparams_batch.n_threads = 6;*/
     
 
-    // Comando per avviare llama-server
-    std::string command = "./build/bin/llama-server -m " + model_path + " -c 2048 &";
-    
-    // Avvia il server in background
+    // command to start llama-server
+    std::string command = "./build/bin/llama-server -m " + model_path + " -c " + std::to_string(4096) + " -n " + std::to_string(m_npredict) + " -ngl " + std::to_string(m_ngl) + " &";
+    yCInfo(LLAMA2DEVICE) << command;
+
+    // launch llama-server in background
     int status = std::system(command.c_str());
     
     if (status == 0) {
-        yCInfo(LLAMA2DEVICE) << "llama-server avviato con successo!";
+        yCInfo(LLAMA2DEVICE) << "llama-server started succesfully!";
     } else {
-        yCInfo(LLAMA2DEVICE) << "Errore nell'avvio di llama-server";
+        yCError(LLAMA2DEVICE) << "Error starting llama-server";
         return 1;
     }
-
-    //std::string risposta = sendPostRequest();
-    //yCInfo(LLAMA2DEVICE) << risposta;
 
     return true;
 }
 
 bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAnswer)
 {
-    /*ask_question = question;
-    model_question = question;
-    // if prompt is set, add it to the question
-    if(prompt_set == true){
-        if(first_prompt_set == true){
-            model_question = m_prompt.content;
-            model_question += " " + ask_question;
-        }
-        first_prompt_set = false;
-    }
-    else {
-        model_question = question;
-    }
-    nlohmann::json messages = {
-        {{"role", "system"}, {"content", "You are an automated answerer. You can only answer yes or no."}},
-        {{"role", "user"}, {"content", "Is the sun a star?"}},
-        {{"role", "assistant"}, {"content", "Yes."}},
-        {{"role", "user"}, {"content", "Is the moon a star?"}},
-        {{"content", "No"},{"role", "assistant"}},
-    };
-
-    model_question = messages.dump();
-
-    yCInfo(LLAMA2DEVICE) << model_question;*/
-
     nlohmann::json request_json;
     request_json["model"] = "default";
-    request_json["max_tokens"] = 128;
+    //request_json["max_tokens"] = 128;
+    request_json["max_tokens"] = m_npredict;
 
-    // Inserisci la conversazione precedente
+    // Pass the conversation to the model
     nlohmann::json messages_array = nlohmann::json::array();
     for (const auto& msg : m_conversation) {
         messages_array.push_back({{"role", msg.type}, {"content", msg.content}});
     }
 
-    // Aggiungi la nuova domanda alla conversazione
+    // Add new question to the conversation
     messages_array.push_back({{"role", "user"}, {"content", question}});
 
-    // Inserisci l'array di messaggi nella richiesta
+    // Insert array messages into the request
     request_json["messages"] = messages_array;
 
-    // Stampa per debug
+    // Debug print
     yCInfo(LLAMA2DEVICE) << "JSON Request: " << request_json.dump();
 
-    // Converte il JSON in stringa e invia la richiesta
+    // Convert JSON to string and send the request to the model
     std::string risposta = sendPostRequest(request_json.dump());
 
-    // Analizza la risposta del modello
+    // extract model's answer
     std::string final_output = extractContent(risposta);
 
     // add question to the conversation

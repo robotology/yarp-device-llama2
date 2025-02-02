@@ -69,12 +69,8 @@ private:
     std::vector<llama_token> tokens_list;
     std::string model_path;
     llama_model *model;
-    llama_batch batch = llama_batch_init(512, 0, 1);
     std::vector<std::pair<Author, Content>> conversation_log;
-    llama_model_params model_params;
-    common_params params;
-    common_sampler * smpl = nullptr;
-    llama_context * ctx = nullptr;
+    llama_model_params model_params;  
     std::vector<common_chat_msg> chat_msgs;
     std::string conversation;
     std::string model_question;
