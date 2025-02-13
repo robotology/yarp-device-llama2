@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Sun Feb  2 18:28:52 2025
+// Generated on: Thu Feb 13 11:02:20 2025
 
 
 #include "Llama2Device_ParamsParser.h"
@@ -178,7 +178,7 @@ std::string      Llama2Device_ParamsParser::getDocumentationOfDeviceParams() con
     doc = doc + std::string("'context': context size (use ctx_size = 0 to load context size from the model)\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <mandatory_value> --npredict -1 --ngl 50 --offload_gpu true --context 4096\n";
+    doc = doc + " yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <mandatory_value> --npredict 128 --ngl 50 --offload_gpu true --context 4096\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device yarp_llama2Device --model_name <mandatory_value>\n";
     doc = doc + std::string("=============================================\n\n");    return doc;

@@ -42,7 +42,7 @@ std::string extractContent(const std::string& jsonResponse) {
         json parsedJson = json::parse(jsonResponse);  // JSON parsing
         return parsedJson["choices"][0]["message"]["content"].get<std::string>();
     } catch (const std::exception& e) {
-        std::cerr << "Errore nel parsing del JSON: " << e.what() << std::endl;
+        std::cerr << "Error in parsing JSON: " << e.what() << std::endl;
         return "";
     }
 }
@@ -108,24 +108,18 @@ bool Llama2Device::open(yarp::os::Searchable &config)
 
 // method for the initialization of the LLM model
 bool Llama2Device::init_LLM(const std::string &model_path)
-{
-    // number of layers to offload to the GPU
-    ngl = 99;
-    // number of tokens to predict
-    n_predict = 64;
-    // initialize the model
-    /*params.cpuparams.n_threads = 6;
-    params.n_ctx = 131072;
-    params.n_batch = 2048;
-    params.n_ubatch = 512;
-    params.n_predict = 15;
-    params.rope_freq_base = 500000.0;
-    params.cpuparams_batch.n_threads = 6;*/
-    
-
-    // command to start llama-server
-    std::string command = "./build/bin/llama-server -m " + model_path + " -c " + std::to_string(4096) + " -n " + std::to_string(m_npredict) + " -ngl " + std::to_string(m_ngl) + " &";
-    yCInfo(LLAMA2DEVICE) << command;
+{   
+    std::string command;
+    if(m_offload_gpu == true){
+        // command to start llama-server with gpu offload enabled
+        command = "./build/bin/llama-server -m " + model_path + " -c " + std::to_string(m_context) + " -ngl " + std::to_string(m_ngl) + " &";
+        yCInfo(LLAMA2DEVICE) << command;
+    }
+    else{
+        // command to start llama-server without gpu offload enabled
+        command = "./build/bin/llama-server -m " + model_path + " -c " + std::to_string(m_context) + " &";
+        yCInfo(LLAMA2DEVICE) << command;
+    }
 
     // launch llama-server in background
     int status = std::system(command.c_str());
@@ -144,7 +138,6 @@ bool Llama2Device::ask(const std::string &question, yarp::dev::LLM_Message &oAns
 {
     nlohmann::json request_json;
     request_json["model"] = "default";
-    //request_json["max_tokens"] = 128;
     request_json["max_tokens"] = m_npredict;
 
     // Pass the conversation to the model
