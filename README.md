@@ -75,6 +75,18 @@ cmake --build build
 cmake --build build --target install
 ~~~
 The library will automatically detect the gpu as a device and will use it to compute results faster.
+The GGML_CUDA flag automatically turns on other related flags, double check that all of the following flags have been enabled:
+ ~~~
+GGML_ACCELERATE                  ON
+GGML_CCACHE                      ON
+GGML_CUDA                        ON
+GGML_CUDA_GRAPHS                 ON
+GGML_LASX                        ON
+GGML_LLAMAFILE                   ON
+GGML_LSX                         ON
+GGML_NATIVE                      ON
+GGML_OPENMP                      ON
+~~~
 
 Note: it is mandatory to have an Nvidia gpu and have CUDA toolkit version > 10 installed.
 To install CUDA toolkit follow this [official guide](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/).
