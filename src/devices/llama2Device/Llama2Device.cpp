@@ -16,22 +16,13 @@
  #include "common.h"
  #include "arg.h"
  #include "sampling.h"
- #include <iostream>
- #include "json.hpp"
- #include <curl/curl.h>
  
  #include <cmath>
  #include <cstdio>
  #include <string>
  #include <vector>
  
- #include <sys/types.h>
- #include <sys/prctl.h>
- #include <unistd.h>
- #include <cstdlib>
- #include <cstring>
- #include <signal.h>
- 
+ #include "Utils.h"
  
  using namespace yarp::dev;
  
@@ -42,68 +33,6 @@
  
  }
  
- using json = nlohmann::json;
- 
- std::string extractContent(const std::string& jsonResponse) {
-     try {
-         json parsedJson = json::parse(jsonResponse);  // JSON parsing
-         return parsedJson["choices"][0]["message"]["content"].get<std::string>();
-     } catch (const std::exception& e) {
-         std::cerr << "Error in parsing JSON: " << e.what() << std::endl;
-         return "";
-     }
- }
- 
- size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
-     ((std::string*)userp)->append((char*)contents, size * nmemb);
-     return size * nmemb;
- }
- 
- std::string sendPostRequest(const std::string& jsonData) {
-     CURL *curl;
-     CURLcode res;
-     std::string responseString;
- 
-     curl_global_init(CURL_GLOBAL_ALL);
-     curl = curl_easy_init();
- 
-     if (curl) {
-         const char* url = "http://localhost:8080/v1/chat/completions";
-         yCInfo(LLAMA2DEVICE) << "Sending request to: " << url;
-         yCInfo(LLAMA2DEVICE) << "JSON data: " << jsonData;
- 
-         curl_easy_setopt(curl, CURLOPT_URL, url);
-         curl_easy_setopt(curl, CURLOPT_POST, 1);
-         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonData.c_str());
- 
-         struct curl_slist *headers = NULL;
-         headers = curl_slist_append(headers, "Content-Type: application/json");
-         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
- 
-         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseString);
- 
-         // DEBUG: enable cURL logging
-         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
- 
-         res = curl_easy_perform(curl);
- 
-         if (res != CURLE_OK) {
-             yCInfo(LLAMA2DEVICE) << "Error in the request: " << curl_easy_strerror(res);
-         }
- 
-         long response_code;
-         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-         yCInfo(LLAMA2DEVICE) << "HTTP response code: " << response_code;
- 
-         curl_easy_cleanup(curl);
-         curl_global_cleanup();
-     }
- 
-     return responseString;
- }
- 
- 
  bool Llama2Device::open(yarp::os::Searchable &config)
  {
      if (!parseParams(config))  { return false; }
@@ -113,69 +42,11 @@
      return true;
  }
  
- 
- void startLlama2Server(const std::string &model_path, int m_context, int m_gpulayers) {
-     pid_t pid = fork();
- 
-     if (pid == 0) { // Child process
-         prctl(PR_SET_PDEATHSIG, SIGKILL); // Auto-kill if parent exits
- 
-         // Prepare arguments for execvp
-         std::string exe_path = "llama-server";
-         std::string arg_m = "-m";
-         std::string arg_c = "-c";
-         std::string arg_ngl = "-ngl";
-         std::string arg_context = std::to_string(m_context);
-         std::string arg_nglvalue = std::to_string(m_gpulayers);
-
-         char *args[] = {
-             (char *)exe_path.c_str(),
-             (char *)arg_m.c_str(),
-             (char *)model_path.c_str(),
-             (char *)arg_c.c_str(),
-             (char *)arg_context.c_str(),
-             (char *)arg_ngl.c_str(),
-             (char *)arg_nglvalue.c_str(),
-             nullptr
-         };
- 
-         execvp(args[0], args);
-         std::cerr << "Error: Failed to start llama2-server!" << std::endl;
-         std::exit(1);
-     } else if (pid > 0) { // Parent process
-         std::cout << "llama2-server started in background with PID: " << pid << std::endl;
-     } else {
-         std::cerr << "Error: fork() failed!" << std::endl;
-     }
- }
- 
  // method for the initialization of the LLM model
  bool Llama2Device::init_LLM(const std::string &model_path)
  {
-     std::string command;
-     // if(m_offload_gpu == true){
-     //     // command to start llama-server with gpu offload enabled
-     //     command = "./build/bin/llama-server -m " + model_path + " -c " + std::to_string(m_context) + " -ngl " + std::to_string(m_ngl) + " &";
-     //     yCInfo(LLAMA2DEVICE) << command;
-     // }
-     // else{
-     //     // command to start llama-server without gpu offload enabled
-     //     command = "./build/bin/llama-server -m " + model_path + " -c " + std::to_string(m_context) + " &";
-     //     yCInfo(LLAMA2DEVICE) << command;
-     // }
- 
      // start llama-server in background
      startLlama2Server(model_path, m_context, m_ngl);
- 
-     // launch llama-server in background
-     int status = std::system(command.c_str());
- 
-     if (status == 0) {
-         yCInfo(LLAMA2DEVICE) << "llama-server started succesfully!";
-     } else {
-         yCError(LLAMA2DEVICE) << "Error starting llama-server";
-         return 1;
-     }
  
      return true;
  }
@@ -198,9 +69,6 @@
      // Insert array messages into the request
      request_json["messages"] = messages_array;
  
-     // Debug print
-     yCInfo(LLAMA2DEVICE) << "JSON Request: " << request_json.dump();
- 
      // Convert JSON to string and send the request to the model
      std::string risposta = sendPostRequest(request_json.dump());
  
@@ -215,11 +83,6 @@
  
      // variable used to store the complete answer generated by the model
      final_output = extractContent(risposta);
- 
- 
-     yCInfo(LLAMA2DEVICE) << final_output;
-     yCInfo(LLAMA2DEVICE) << risposta;
- 
  
      // add model answer to the conversation
      message.type = "assitant";

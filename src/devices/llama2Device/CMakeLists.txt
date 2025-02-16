@@ -19,6 +19,8 @@ if(NOT SKIP_llama2Device)
       Llama2Device.h
       Llama2Device_ParamsParser.cpp
       Llama2Device_ParamsParser.h
+      Utils.cpp
+      Utils.h
   )
 
   # cmake_path(SET LLAMA_INCLUDE_PATH "${LLAMA_INSTALL_PATH}/include")
