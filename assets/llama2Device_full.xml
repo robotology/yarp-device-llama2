@@ -10,8 +10,12 @@
     <devices>
         <device name="llama2_device" type="llama2Device">
             <param name="model_name">
-                /home/leonardo/Repos/yarp-device-llama2/models/llama2/speechless-llama2-13b.Q4_K_M.gguf
+                /home/leonardo/Repos/yarp-device-llama2/models/llama2/Dolphin3.0-Llama3.2-3B-f16.gguf
             </param>
+            <!--<param name="model_context">
+                llama2context
+                /home/leonardo/Repos/yarp-device-llama2/models/llama2/speechless-llama2-13b.Q4_K_M.gguf
+            </param>-->
             <param name="npredict">
                 100
             </param>

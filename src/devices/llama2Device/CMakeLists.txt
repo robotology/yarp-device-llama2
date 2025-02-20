@@ -19,6 +19,8 @@ if(NOT SKIP_llama2Device)
       Llama2Device.h
       Llama2Device_ParamsParser.cpp
       Llama2Device_ParamsParser.h
+      Utils.cpp
+      Utils.h
   )
 
   # cmake_path(SET LLAMA_INCLUDE_PATH "${LLAMA_INSTALL_PATH}/include")
@@ -40,6 +42,8 @@ if(NOT SKIP_llama2Device)
   message(STATUS "LLAMA_INCLUDE_PATH: ${LLAMA_INCLUDE_PATH}")
 message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 
+find_package(CURL REQUIRED)
+target_link_libraries(yarp_llama2Device PRIVATE CURL::libcurl)
 
   target_link_libraries(yarp_llama2Device
     PRIVATE
@@ -47,6 +51,11 @@ message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
       YARP::YARP_sig
       YARP::YARP_dev
       llama
+      common
+      #"${CMAKE_SOURCE_DIR}/llama.cpp/src/libllama.so"
+      #"${CMAKE_SOURCE_DIR}/llama.cpp/build/common/libcommon.a"
+      # "/home/leonardo/Repos/llama.cpp/build/src/libllama.so"
+      # "/home/leonardo/Repos/llama.cpp/build/common/libcommon.a"
   )
 
   yarp_install(

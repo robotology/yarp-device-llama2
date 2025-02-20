@@ -23,6 +23,32 @@ To install Llama2Device we simply need to clone this repository and run setup_su
 ~~~
 this file clones llama.cpp library to a specific working version. It is recommended to stick to this version and not to use a newer one since the functioning is not guaranteed.
 
+Before compilation move inside build folder and type:
+~~~
+ccmake ..
+~~~
+The following flags must be enabled: 
+~~~
+ ALLOW_DEVICE_PARAM_PARSER_GENE   ON
+ BUILD_SHARED_LIBS                ON
+ LLAMA_ALL_WARNINGS               ON
+ LLAMA_BUILD_COMMON               ON
+ LLAMA_BUILD_EXAMPLES             ON
+ LLAMA_BUILD_SERVER               ON
+~~~
+
+It is also fundamental to add the /build/bin folder to system PATH, it can be done by running these commands:
+~~~
+echo 'export PATH="path_to_build/bin_folder::$PATH"' >> ~/.bashrc
+source ~/.bashrc
+~~~
+
+[Curl](https://curl.se/) must be installed to use the device, it can be installed by executing these commands:
+~~~
+sudo apt update
+sudo apt install curl
+~~~
+
 ### Build with pure CMake commands
 
 ~~~
@@ -49,6 +75,18 @@ cmake --build build
 cmake --build build --target install
 ~~~
 The library will automatically detect the gpu as a device and will use it to compute results faster.
+The GGML_CUDA flag automatically turns on other related flags, double check that all of the following flags have been enabled:
+ ~~~
+GGML_ACCELERATE                  ON
+GGML_CCACHE                      ON
+GGML_CUDA                        ON
+GGML_CUDA_GRAPHS                 ON
+GGML_LASX                        ON
+GGML_LLAMAFILE                   ON
+GGML_LSX                         ON
+GGML_NATIVE                      ON
+GGML_OPENMP                      ON
+~~~
 
 Note: it is mandatory to have an Nvidia gpu and have CUDA toolkit version > 10 installed.
 To install CUDA toolkit follow this [official guide](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/).

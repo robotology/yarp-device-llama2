@@ -12,6 +12,7 @@
 #include "Llama2Device_ParamsParser.h"
 #include <llama.h>
 #include <common.h>
+#include "sampling.h"
 #include <vector>
 #include <string>
 #include <cstdio>
@@ -65,19 +66,17 @@ public:
     void convAdd(std::vector<yarp::dev::LLM_Message>& conversation, const std::string& type, const std::string& content);
 
 private:
-    llama_context *ctx;
     std::vector<llama_token> tokens_list;
     std::string model_path;
     llama_model *model;
-    llama_batch batch = llama_batch_init(512, 0, 1);
     std::vector<std::pair<Author, Content>> conversation_log;
-    llama_model_params model_params;
+    llama_model_params model_params;  
+    std::vector<common_chat_msg> chat_msgs;
     std::string conversation;
     std::string model_question;
-    int ngl;
-    int n_predict;
+    std::string ask_question;
     bool prompt_set = false;
-    bool new_prompt = true;
+    bool first_prompt_set = false;
     bool initialized = false;
     std::vector<yarp::dev::LLM_Message> m_conversation;
     yarp::dev::LLM_Message m_prompt;
