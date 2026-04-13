@@ -8,7 +8,7 @@
 // This is an automatically generated file. Please do not edit it.
 // It will be re-generated if the cmake flag ALLOW_DEVICE_PARAM_PARSER_GERNERATION is ON.
 
-// Generated on: Mon Feb 16 18:27:40 2026
+// Generated on: Mon Apr 13 16:55:49 2026
 
 
 #include "Llama2Device_ParamsParser.h"
@@ -34,6 +34,8 @@ std::vector<std::string> Llama2Device_ParamsParser::getListOfParams() const
     params.push_back("ngl");
     params.push_back("offload_gpu");
     params.push_back("context");
+    params.push_back("prompt_file");
+    params.push_back("prompt_context");
     return params;
 }
 
@@ -69,6 +71,16 @@ bool Llama2Device_ParamsParser::getParamValue(const std::string& paramName, std:
     if (paramName =="context")
     {
         paramValue = std::to_string(m_context);
+        return true;
+    }
+    if (paramName =="prompt_file")
+    {
+        paramValue = m_prompt_file;
+        return true;
+    }
+    if (paramName =="prompt_context")
+    {
+        paramValue = m_prompt_context;
         return true;
     }
 
@@ -184,6 +196,34 @@ bool      Llama2Device_ParamsParser::parseParams(const yarp::os::Searchable & co
         prop_check.unput("context");
     }
 
+    //Parser of parameter prompt_file
+    {
+        if (config.check("prompt_file"))
+        {
+            m_prompt_file = config.find("prompt_file").asString();
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'prompt_file' using value:" << m_prompt_file;
+        }
+        else
+        {
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'prompt_file' using DEFAULT value:" << m_prompt_file;
+        }
+        prop_check.unput("prompt_file");
+    }
+
+    //Parser of parameter prompt_context
+    {
+        if (config.check("prompt_context"))
+        {
+            m_prompt_context = config.find("prompt_context").asString();
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'prompt_context' using value:" << m_prompt_context;
+        }
+        else
+        {
+            yCInfo(Llama2DeviceParamsCOMPONENT) << "Parameter 'prompt_context' using DEFAULT value:" << m_prompt_context;
+        }
+        prop_check.unput("prompt_context");
+    }
+
     /*
     //This code check if the user set some parameter which are not check by the parser
     //If the parser is set in strict mode, this will generate an error
@@ -226,9 +266,11 @@ std::string      Llama2Device_ParamsParser::getDocumentationOfDeviceParams() con
     doc = doc + std::string("'ngl': number of layers to offload to the gpu\n");
     doc = doc + std::string("'offload_gpu': bool value to offload computations to gpu (default = true)\n");
     doc = doc + std::string("'context': context size (use ctx_size = 0 to load context size from the model)\n");
+    doc = doc + std::string("'prompt_file': The file containing the prompt for the LLM\n");
+    doc = doc + std::string("'prompt_context': The yarp context from which the prompt file should be loaded\n");
     doc = doc + std::string("\n");
     doc = doc + std::string("Here are some examples of invocation command with yarpdev, with all params:\n");
-    doc = doc + " yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <mandatory_value> --npredict 128 --ngl 50 --offload_gpu true --context 4096\n";
+    doc = doc + " yarpdev --device yarp_llama2Device --model_context <optional_value> --model_name <mandatory_value> --npredict 128 --ngl 50 --offload_gpu true --context 4096 --prompt_file <optional_value> --prompt_context <optional_value>\n";
     doc = doc + std::string("Using only mandatory params:\n");
     doc = doc + " yarpdev --device yarp_llama2Device --model_name <mandatory_value>\n";
     doc = doc + std::string("=============================================\n\n");    return doc;
