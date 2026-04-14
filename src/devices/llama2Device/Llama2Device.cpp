@@ -37,10 +37,25 @@ bool Llama2Device::open(yarp::os::Searchable &config)
 {
     if (!parseParams(config))  { return false; }
     // initialize LLM
-    init_LLM(m_model_name);
-    bool has_prompt_file{m_prompt_file != ""};
+    std::string model_path;
+    bool has_model_context{m_model_context != ""};
     yarp::os::ResourceFinder resource_finder;
-    resource_finder.setDefaultContext(m_prompt_context);
+    if(has_model_context)
+    {
+        resource_finder.setDefaultContext(m_model_context);
+        model_path = resource_finder.findFile(m_model_name);
+    }
+    else
+    {
+        model_path = m_model_name;
+    }
+    init_LLM(model_path);
+    bool has_prompt_file{m_prompt_file != ""};
+    bool has_prompt_context{m_prompt_context != ""};
+    if(has_prompt_context)
+    {
+        resource_finder.setDefaultContext(m_prompt_context);
+    }
 
     if(has_prompt_file)
     {
