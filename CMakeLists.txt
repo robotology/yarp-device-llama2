@@ -40,25 +40,48 @@ if(YARP_catch2_FOUND AND YARP_dev_tests_FOUND)
   if(YARP_COMPILE_TESTS)
     enable_testing()
   endif()
-  message (STATUS "yarp_catch2 and yarp_dev_tests libraries found")
+  message(STATUS "yarp_catch2 and yarp_dev_tests libraries found")
 else()
-  SET(YARP_COMPILE_TESTS OFF CACHE BOOL "yarp_catch2 and yarp_dev_tests libraries NOT found. Tests cannot be enabled" FORCE)
-  message (STATUS "yarp_catch2 and yarp_dev_tests libraries NOT found. Tests cannot be enabled")
+  set(YARP_COMPILE_TESTS OFF CACHE BOOL "yarp_catch2 and yarp_dev_tests libraries NOT found. Tests cannot be enabled" FORCE)
+  message(STATUS "yarp_catch2 and yarp_dev_tests libraries NOT found. Tests cannot be enabled")
 endif()
 
 include(YarpValgrindOptions)
 
 include(AddInstallRPATHSupport)
-add_install_rpath_support(BIN_DIRS "${CMAKE_INSTALL_FULL_BINDIR}"
-                          LIB_DIRS "${CMAKE_INSTALL_FULL_LIBDIR}"
-                          INSTALL_NAME_DIR "${CMAKE_INSTALL_FULL_LIBDIR}"
-                          USE_LINK_PATH)
+add_install_rpath_support(
+  BIN_DIRS "${CMAKE_INSTALL_FULL_BINDIR}"
+  LIB_DIRS "${CMAKE_INSTALL_FULL_LIBDIR}"
+  INSTALL_NAME_DIR "${CMAKE_INSTALL_FULL_LIBDIR}"
+  USE_LINK_PATH
+)
+
+# Prefer libraries located next to the built/installed binaries.
+# This helps avoid accidentally loading an unrelated system-wide libggml.so.
+set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+if(UNIX AND NOT APPLE)
+  list(APPEND CMAKE_BUILD_RPATH
+       "$ORIGIN"
+       "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+  list(APPEND CMAKE_INSTALL_RPATH
+       "$ORIGIN"
+       "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+elseif(APPLE)
+  list(APPEND CMAKE_BUILD_RPATH
+       "@loader_path"
+       "@loader_path/../${CMAKE_INSTALL_LIBDIR}")
+  list(APPEND CMAKE_INSTALL_RPATH
+       "@loader_path"
+       "@loader_path/../${CMAKE_INSTALL_LIBDIR}")
+endif()
 
 if(NOT CMAKE_CONFIGURATION_TYPES)
-    if(NOT CMAKE_BUILD_TYPE)
-        message(STATUS "Setting build type to 'Release' as none was specified.")
-        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE "Release")
-    endif()
+  if(NOT CMAKE_BUILD_TYPE)
+    message(STATUS "Setting build type to 'Release' as none was specified.")
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE "Release")
+  endif()
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS 1)
@@ -73,12 +96,25 @@ yarp_configure_external_installation(${PROJECT_NAME})
 
 find_package(Doxygen)
 
-# add_subdirectory(llama.cpp)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/llama.cpp)
+#
+# Embedded llama.cpp policy:
+# - Build it statically to avoid runtime collisions with system-installed libggml.so
+# - Force Vulkan OFF in this embedded copy
+#
+set(_PROJECT_BUILD_SHARED_LIBS "${BUILD_SHARED_LIBS}")
+
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build libraries as shared as opposed to static" FORCE)
+set(GGML_VULKAN OFF CACHE BOOL "Disable Vulkan for embedded llama.cpp" FORCE)
+
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/llama.cpp")
+
+# Restore the parent project's choice for the rest of the build
+set(BUILD_SHARED_LIBS "${_PROJECT_BUILD_SHARED_LIBS}" CACHE BOOL "Build libraries as shared as opposed to static" FORCE)
+unset(_PROJECT_BUILD_SHARED_LIBS)
 
 add_subdirectory(src)
-#add_subdirectory(doc)
+# add_subdirectory(doc)
 add_subdirectory(tests)
-#add_subdirectory(models)
+# add_subdirectory(models)
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES)
